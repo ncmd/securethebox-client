@@ -1,13 +1,10 @@
 import React, {Component} from 'react';
 import {withStyles} from 'material-ui/styles/index';
 import classNames from 'classnames';
-import {Avatar, Button, Icon, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Typography} from 'material-ui';
+import {Icon, IconButton, Typography} from 'material-ui';
 import {connect} from 'react-redux';
 import * as quickPanelActions from 'main/quickPanel/store/actions';
-import * as authActions from 'auth/store/actions';
 import {bindActionCreators} from 'redux';
-import {FuseShortcuts} from '@fuse';
-import {Link} from 'react-router-dom';
 
 const styles = theme => ({
     root     : {
@@ -23,120 +20,19 @@ const styles = theme => ({
 });
 
 class MainToolbar extends Component {
-    state = {
-        userMenu: null
-    };
-
-    userMenuClick = event => {
-        this.setState({userMenu: event.currentTarget});
-    };
-
-    userMenuClose = () => {
-        this.setState({userMenu: null});
-    };
 
     render()
     {
-        const {classes, toggleQuickPanel, user, logout} = this.props;
-        const {userMenu} = this.state;
+        const {classes, toggleQuickPanel} = this.props;
 
         return (
             <div className={classNames(classes.root, "flex flex-row")}>
 
-                <div className="flex flex-1">
-                    <FuseShortcuts/>
+                <div className="flex flex-1 px-24">
+                    <Typography>Toolbar</Typography>
                 </div>
 
                 <div className="flex">
-
-                    <Button
-                        className="h-64"
-                        aria-owns={userMenu ? 'user-menu' : null}
-                        aria-haspopup="true"
-                        onClick={this.userMenuClick}
-                    >
-                        {user.data ? (
-                            <React.Fragment>
-                                <Avatar className="" alt="Guest" src={user.data.avatar}/>
-
-                                <div className="hidden md:flex flex-col ml-12 items-start">
-                                    <Typography component="span" className="normal-case font-500 flex">
-                                        {user.data.name + ' ' + user.data.lastName}
-                                    </Typography>
-                                    <Typography className="text-11 capitalize" color="textSecondary">
-                                        {user.role}
-                                    </Typography>
-                                </div>
-                            </React.Fragment>
-                        ) : (
-                            <React.Fragment>
-                                <Avatar className="" alt="Guest" src="assets/images/avatars/profile.jpg"/>
-                                <div className="hidden md:flex flex-col ml-12 items-start">
-                                    <Typography component="span" className="normal-case font-500 flex">
-                                        John Doe
-                                    </Typography>
-                                    <Typography className="text-11 capitalize" color="textSecondary">
-                                        {user.role}
-                                    </Typography>
-                                </div>
-                            </React.Fragment>
-                        )}
-
-                        <Icon className="text-16 ml-12 hidden sm:flex" variant="action">keyboard_arrow_down</Icon>
-                    </Button>
-                    <Menu
-                        id="user-menu"
-                        anchorEl={userMenu}
-                        open={Boolean(userMenu)}
-                        onClose={this.userMenuClose}
-                        classes={{
-                            paper: 'mt-48'
-                        }}
-                    >
-                        {user.role === 'guest' ? (
-                            <React.Fragment>
-                                <MenuItem component={Link} to="/login"
-                                >
-                                    <ListItemIcon>
-                                        <Icon>lock</Icon>
-                                    </ListItemIcon>
-                                    <ListItemText className="pl-0" primary="Login"/>
-                                </MenuItem>
-                            </React.Fragment>
-                        ) : (
-                            <React.Fragment>
-                                <MenuItem component={Link} to="/pages/profile" onClick={this.userMenuClose}>
-                                    <ListItemIcon>
-                                        <Icon>account_circle</Icon>
-                                    </ListItemIcon>
-                                    <ListItemText className="pl-0" primary="My Profile"/>
-                                </MenuItem>
-                                <MenuItem component={Link} to="/apps/mail" onClick={this.userMenuClose}>
-                                    <ListItemIcon>
-                                        <Icon>mail</Icon>
-                                    </ListItemIcon>
-                                    <ListItemText className="pl-0" primary="Inbox"/>
-                                </MenuItem>
-                                <MenuItem
-                                    onClick={() => {
-                                        logout();
-                                        this.userMenuClose();
-                                    }}
-                                >
-                                    <ListItemIcon>
-                                        <Icon>exit_to_app</Icon>
-                                    </ListItemIcon>
-                                    <ListItemText className="pl-0" primary="Logout"/>
-                                </MenuItem>
-                            </React.Fragment>
-                        )}
-                    </Menu>
-
-                    <div className={classes.seperator}/>
-
-                    <IconButton className="w-64 h-64">
-                        <Icon>search</Icon>
-                    </IconButton>
 
                     <div className={classes.seperator}/>
 
@@ -152,17 +48,14 @@ class MainToolbar extends Component {
 function mapDispatchToProps(dispatch)
 {
     return bindActionCreators({
-        toggleQuickPanel: quickPanelActions.toggleQuickPanel,
-        logout          : authActions.logoutUser
+        toggleQuickPanel: quickPanelActions.toggleQuickPanel
     }, dispatch);
 }
 
 
-function mapStateToProps({auth})
+function mapStateToProps({})
 {
-    return {
-        user: auth.user
-    }
+    return {}
 }
 
 export default withStyles(styles, {withTheme: true})(connect(mapStateToProps, mapDispatchToProps)(MainToolbar));
