@@ -52,10 +52,4 @@ function mapDispatchToProps(dispatch)
     }, dispatch);
 }
 
-
-function mapStateToProps({})
-{
-    return {}
-}
-
-export default withStyles(styles, {withTheme: true})(connect(mapStateToProps, mapDispatchToProps)(MainToolbar));
+export default withStyles(styles, {withTheme: true})(connect(null, mapDispatchToProps)(MainToolbar));
