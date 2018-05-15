@@ -17,7 +17,7 @@ class Example extends Component {
                     root: classes.layoutRoot
                 }}
                 header={
-                    <div className="p-24"><h4>Example Component</h4></div>
+                    <div className="p-24"><h4>Header</h4></div>
                 }
                 contentToolbar={
                     <div className="px-24"><h4>Content Toolbar</h4></div>
