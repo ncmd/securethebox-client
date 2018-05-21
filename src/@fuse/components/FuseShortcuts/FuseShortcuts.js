@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {Divider, Icon, IconButton, Input, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip, Typography, withStyles} from '@material-ui/core';
-import * as Actions from '../../../store/actions/fuse/index';
+import * as UserActions from 'auth/store/actions';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {FuseUtils} from '@fuse';
 import {Link} from 'react-router-dom';
-import amber from '@material-ui/core/es/colors/amber';
+import amber from '@material-ui/core/colors/amber';
 import classNames from 'classnames';
 import _ from 'lodash';
 
@@ -33,7 +33,6 @@ class FuseShortcuts extends Component {
 
     componentDidMount()
     {
-        this.props.getShortcuts();
         this.flattenNavigation(this.props.navigation);
     }
 
@@ -198,16 +197,15 @@ class FuseShortcuts extends Component {
 function mapDispatchToProps(dispatch)
 {
     return bindActionCreators({
-        getShortcuts     : Actions.getShortcuts,
-        toggleInShortcuts: Actions.toggleInShortcuts
+        toggleInShortcuts: UserActions.toggleInShortcuts
     }, dispatch);
 }
 
-function mapStateToProps({fuse})
+function mapStateToProps({fuse, auth})
 {
     return {
         navigation: fuse.navigation,
-        shortcuts : fuse.shortcuts
+        shortcuts : auth.user.data.shortcuts
     }
 }
 
