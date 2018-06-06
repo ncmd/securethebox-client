@@ -2,7 +2,9 @@ import Example from './Example';
 
 export const ExampleConfig = {
     settings: {
-        layout: {}
+        layout: {
+            config: {}
+        }
     },
     routes  : [
         {
