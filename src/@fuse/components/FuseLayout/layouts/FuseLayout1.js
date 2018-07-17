@@ -12,12 +12,13 @@ import _ from 'lodash';
 
 const defaultProps = {};
 
-const navbarWidth = 256;
+const navbarWidth = 280;
 
 const styles = theme => ({
     root               : {
+        position                    : 'relative',
         display                     : 'flex',
-        flexDirection               : 'column',
+        flexDirection               : 'row',
         width                       : '100%',
         height                      : '100%',
         overflow                    : 'hidden',
@@ -71,6 +72,7 @@ const styles = theme => ({
     contentWrapper     : {
         display      : 'flex',
         flexDirection: 'column',
+        position     : 'relative',
         zIndex       : 3,
         overflow     : 'hidden',
         flex         : '1 1 auto'
@@ -84,8 +86,7 @@ const styles = theme => ({
         '-webkit-overflow-scrolling': 'touch'
     },
     navbarWrapper      : {
-        boxShadow: theme.shadows[3],
-        zIndex   : 4
+        zIndex: 4
     },
     navbarPaperWrapper : {},
     navbar             : {
@@ -99,7 +100,8 @@ const styles = theme => ({
         transition   : theme.transitions.create(['width', 'min-width'], {
             easing  : theme.transitions.easing.sharp,
             duration: theme.transitions.duration.shorter
-        })
+        }),
+        boxShadow    : theme.shadows[3]
     },
     navbarButton       : {
         '&.right': {
@@ -128,7 +130,10 @@ const styles = theme => ({
     },
     navbarFoldedClose  : {
         '& $navbarHeader'                       : {
-            padding         : '0 8px 0 13px',
+            '& .logo-icon'  : {
+                width : 32,
+                height: 32
+            },
             '& .logo-text'  : {
                 opacity: 0
             },
@@ -152,25 +157,40 @@ const styles = theme => ({
         },
         '& .collapse-children'                  : {
             display: 'none'
+        },
+        '& .user'                               : {
+            '& .username, & .email': {
+                opacity: 0
+            },
+            '& .avatar'            : {
+                width  : 40,
+                height : 40,
+                top    : 32,
+                padding: 0
+            }
         }
     },
     navbarHeaderWrapper: {
-        display        : 'flex',
-        alignItems     : 'center',
-        flex           : '0 1 auto',
-        ...theme.mixins.toolbar,
-        backgroundColor: 'rgba(255, 255, 255, .05)',
-        boxShadow      : theme.shadows[1]
+        display      : 'flex',
+        alignItems   : 'center',
+        flex         : '0 1 auto',
+        flexDirection: 'row',
+        height       : 64,
+        minHeight    : 64
     },
     navbarHeader       : {
         display: 'flex',
-        flex   : '1 1 auto',
+        flex   : '1 0 auto',
         padding: '0 8px 0 16px'
     },
     navbarContent      : {
         overflowX                   : 'hidden',
         overflowY                   : 'auto',
-        '-webkit-overflow-scrolling': 'touch'
+        '-webkit-overflow-scrolling': 'touch',
+        background                  : 'linear-gradient(rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0) 30%), linear-gradient(rgba(0, 0, 0, 0.25) 0, rgba(0, 0, 0, 0) 40%)',
+        backgroundRepeat            : 'no-repeat',
+        backgroundSize              : '100% 40px, 100% 10px',
+        backgroundAttachment        : 'local, scroll'
     },
     toolbarWrapper     : {
         display : 'flex',
@@ -200,26 +220,31 @@ class FuseLayout1 extends Component {
 
     render()
     {
-        const {classes, toolbar, footer, navbarHeader, navbarContent, settings, navbar, navbarOpenMobile, navbarCloseMobile, navbarOpenFolded, navbarCloseFolded} = this.props;
+        const {classes, toolbar, footer, navbarHeader, navbarContent, settings, navbar, navbarOpenMobile, navbarCloseMobile, navbarOpenFolded, navbarCloseFolded, children, leftSidePanel, rightSidePanel, contentWrapper} = this.props;
         // console.warn('FuseLayout:: rendered');
         const layoutConfig = settings.layout.config;
 
         const navbarHeaderTemplate = (
-            <div className={classes.navbarHeaderWrapper}>
+            <AppBar
+                color="primary"
+                position="static"
+                elevation={0}
+                className={classes.navbarHeaderWrapper}
+            >
                 <div className={classes.navbarHeader}>
                     {navbarHeader}
                 </div>
                 <Hidden mdDown>
-                    <IconButton onClick={this.handleToggleFolded}>
+                    <IconButton onClick={this.handleToggleFolded} color="inherit">
                         <Icon>menu</Icon>
                     </IconButton>
                 </Hidden>
                 <Hidden lgUp>
-                    <IconButton onClick={navbarCloseMobile}>
+                    <IconButton onClick={navbarCloseMobile} color="inherit">
                         <Icon>menu</Icon>
                     </IconButton>
                 </Hidden>
-            </div>
+            </AppBar>
         );
 
         const navbarContentTemplate = (
@@ -321,13 +346,90 @@ class FuseLayout1 extends Component {
                 return (
                     <div id="fuse-layout" className={classNames(classes.root, layoutConfig.mode, 'scroll-' + layoutConfig.scroll)}>
 
-                        {layoutConfig.toolbar.display && layoutConfig.toolbar.style === 'fixed' && layoutConfig.toolbar.position === 'above' && (
-                            toolbarTemplate
+                        {layoutConfig.leftSidePanel.display && (
+                            leftSidePanel
                         )}
 
-                        <FuseScrollbars className="overflow-auto">
+                        <div className="flex flex-1 flex-col overflow-hidden relative">
 
-                            {layoutConfig.toolbar.display && layoutConfig.toolbar.style !== 'fixed' && layoutConfig.toolbar.position === 'above' && (
+                            {layoutConfig.toolbar.display && layoutConfig.toolbar.style === 'fixed' && layoutConfig.toolbar.position === 'above' && (
+                                toolbarTemplate
+                            )}
+
+                            <FuseScrollbars className="overflow-auto">
+
+                                {layoutConfig.toolbar.display && layoutConfig.toolbar.style !== 'fixed' && layoutConfig.toolbar.position === 'above' && (
+                                    toolbarTemplate
+                                )}
+
+                                <div className={classes.wrapper}>
+
+                                    {layoutConfig.navbar.display && layoutConfig.navbar.position === 'left' && (
+                                        navBarTemplate
+                                    )}
+
+                                    <div
+                                        className={classNames(
+                                            classes.contentWrapper,
+                                            layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'left' && 'md:ml-64',
+                                            layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'right' && 'md:mr-64'
+                                        )}
+                                    >
+
+                                        {layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'below' && (
+                                            toolbarTemplate
+                                        )}
+
+                                        <div className={classes.content}>
+                                            <FuseMessage/>
+                                            {renderRoutes(this.props.routes)}
+                                            {children}
+                                        </div>
+
+                                        {layoutConfig.footer.display && layoutConfig.footer.position === 'below' && (
+                                            footerTemplate
+                                        )}
+
+                                        {contentWrapper}
+
+                                    </div>
+
+                                    {layoutConfig.navbar.display && layoutConfig.navbar.position === 'right' && (
+                                        navBarTemplate
+                                    )}
+                                </div>
+
+                                {layoutConfig.footer.display && layoutConfig.footer.style !== 'fixed' && layoutConfig.footer.position === 'above' && (
+                                    footerTemplate
+                                )}
+
+                            </FuseScrollbars>
+
+                            {layoutConfig.footer.display && layoutConfig.footer.style === 'fixed' && layoutConfig.footer.position === 'above' && (
+                                footerTemplate
+                            )}
+
+                        </div>
+
+                        {layoutConfig.rightSidePanel.display && (
+                            rightSidePanel
+                        )}
+                    </div>
+                );
+            }
+            case 'content':
+            default:
+            {
+                return (
+                    <div id="fuse-layout" className={classNames(classes.root, layoutConfig.mode, 'scroll-' + layoutConfig.scroll)}>
+
+                        {layoutConfig.leftSidePanel.display && (
+                            leftSidePanel
+                        )}
+
+                        <div className="flex flex-1 flex-col overflow-hidden relative">
+
+                            {layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'above' && (
                                 toolbarTemplate
                             )}
 
@@ -340,23 +442,34 @@ class FuseLayout1 extends Component {
                                 <div
                                     className={classNames(
                                         classes.contentWrapper,
-                                        layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'left' && 'md:ml-64',
-                                        layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'right' && 'md:mr-64'
+                                        layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'left' && 'lg:ml-64',
+                                        layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'right' && 'lg:mr-64'
                                     )}
                                 >
-
-                                    {layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'below' && (
+                                    {layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'below' && layoutConfig.toolbar.style === 'fixed' && (
                                         toolbarTemplate
                                     )}
 
-                                    <div className={classes.content}>
-                                        <FuseMessage/>
-                                        {renderRoutes(this.props.routes)}
-                                    </div>
+                                    <FuseScrollbars className={classes.content}>
+                                        {layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'below' && layoutConfig.toolbar.style !== 'fixed' && (
+                                            toolbarTemplate
+                                        )}
 
-                                    {layoutConfig.footer.display && layoutConfig.footer.position === 'below' && (
+                                        <FuseMessage/>
+
+                                        {renderRoutes(this.props.routes)}
+                                        {children}
+
+                                        {layoutConfig.footer.display && layoutConfig.footer.position === 'below' && layoutConfig.footer.style !== 'fixed' && (
+                                            footerTemplate
+                                        )}
+                                    </FuseScrollbars>
+
+                                    {layoutConfig.footer.display && layoutConfig.footer.position === 'below' && layoutConfig.footer.style === 'fixed' && (
                                         footerTemplate
                                     )}
+
+                                    {contentWrapper}
                                 </div>
 
                                 {layoutConfig.navbar.display && layoutConfig.navbar.position === 'right' && (
@@ -364,71 +477,13 @@ class FuseLayout1 extends Component {
                                 )}
                             </div>
 
-                            {layoutConfig.footer.display && layoutConfig.footer.style !== 'fixed' && layoutConfig.footer.position === 'above' && (
+                            {layoutConfig.footer.display && layoutConfig.footer.position === 'above' && (
                                 footerTemplate
-                            )}
-
-                        </FuseScrollbars>
-
-                        {layoutConfig.footer.display && layoutConfig.footer.style === 'fixed' && layoutConfig.footer.position === 'above' && (
-                            footerTemplate
-                        )}
-                    </div>
-                );
-            }
-            case 'content':
-            default:
-            {
-                return (
-                    <div id="fuse-layout" className={classNames(classes.root, layoutConfig.mode, 'scroll-' + layoutConfig.scroll)}>
-
-                        {layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'above' && (
-                            toolbarTemplate
-                        )}
-
-                        <div className={classes.wrapper}>
-
-                            {layoutConfig.navbar.display && layoutConfig.navbar.position === 'left' && (
-                                navBarTemplate
-                            )}
-
-                            <div
-                                className={classNames(
-                                    classes.contentWrapper,
-                                    layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'left' && 'lg:ml-64',
-                                    layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'right' && 'lg:mr-64'
-                                )}
-                            >
-                                {layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'below' && layoutConfig.toolbar.style === 'fixed' && (
-                                    toolbarTemplate
-                                )}
-
-                                <FuseScrollbars className={classes.content}>
-                                    {layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'below' && layoutConfig.toolbar.style !== 'fixed' && (
-                                        toolbarTemplate
-                                    )}
-
-                                    <FuseMessage/>
-
-                                    {renderRoutes(this.props.routes)}
-
-                                    {layoutConfig.footer.display && layoutConfig.footer.position === 'below' && layoutConfig.footer.style !== 'fixed' && (
-                                        footerTemplate
-                                    )}
-                                </FuseScrollbars>
-
-                                {layoutConfig.footer.display && layoutConfig.footer.position === 'below' && layoutConfig.footer.style === 'fixed' && (
-                                    footerTemplate
-                                )}
-                            </div>
-
-                            {layoutConfig.navbar.display && layoutConfig.navbar.position === 'right' && (
-                                navBarTemplate
                             )}
                         </div>
 
-                        {layoutConfig.footer.display && layoutConfig.footer.position === 'above' && (
-                            footerTemplate
+                        {layoutConfig.rightSidePanel.display && (
+                            rightSidePanel
                         )}
                     </div>
                 );
