@@ -22,7 +22,6 @@ import QuickPanel from 'main/quickPanel/QuickPanel';
 import FirebaseAuth from 'firebase-db/FirebaseAuth';
 import store from 'store';
 import SettingsPanel from 'main/SettingsPanel';
-import ChatPanel from 'main/chatPanel/ChatPanel';
 
 const jss = create({
     ...jssPreset(),
@@ -55,7 +54,6 @@ ReactDOM.render(
                                 }
                                 rightSidePanel={
                                     <React.Fragment>
-                                        <ChatPanel/>
                                         <QuickPanel/>
                                     </React.Fragment>
                                 }
