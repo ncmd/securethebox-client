@@ -19,9 +19,9 @@ import MainNavbarHeader from './main/MainNavbarHeader';
 import MainFooter from './main/MainFooter';
 import jssExtend from 'jss-extend'
 import QuickPanel from 'main/quickPanel/QuickPanel';
-import FirebaseAuth from 'firebase-db/FirebaseAuth';
 import store from 'store';
 import SettingsPanel from 'main/SettingsPanel';
+import {Auth} from 'auth';
 
 const jss = create({
     ...jssPreset(),
@@ -34,7 +34,7 @@ const generateClassName = createGenerateClassName();
 ReactDOM.render(
     <JssProvider jss={jss} generateClassName={generateClassName}>
         <Provider store={store}>
-            <FirebaseAuth>
+            <Auth>
                 <Router history={history}>
                     <FuseAuthorization routes={routes}>
                         <FuseTheme>
@@ -65,7 +65,7 @@ ReactDOM.render(
                         </FuseTheme>
                     </FuseAuthorization>
                 </Router>
-            </FirebaseAuth>
+            </Auth>
         </Provider>
     </JssProvider>
     , document.getElementById('root'));
