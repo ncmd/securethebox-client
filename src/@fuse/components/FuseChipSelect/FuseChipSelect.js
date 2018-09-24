@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Select from 'react-select';
 import CreatableSelect from 'react-select/lib/Creatable';
 import {withStyles, Paper, Chip, Typography, TextField, MenuItem} from '@material-ui/core';
 import {emphasize} from '@material-ui/core/styles/colorManipulator';
@@ -17,7 +18,8 @@ const styles = theme => ({
         display   : 'flex',
         flexWrap  : 'wrap',
         flex      : 1,
-        alignItems: 'center'
+        alignItems: 'center',
+        padding   : '6px 4px 0 4px'
     },
     chip            : {
         margin: `${theme.spacing.unit}px ${theme.spacing.unit / 4}px`
@@ -96,7 +98,7 @@ function Option(props)
             selected={props.isFocused}
             component="div"
             style={{
-                fontWeight: props.isSelected ? 500 : 400
+                fontWeight: props.isSelected ? 600 : 400
             }}
             {...props.innerProps}
         >
@@ -140,7 +142,7 @@ function MultiValue(props)
             label={props.children}
             className={classNames(props.selectProps.classes.chip, {
                 [props.selectProps.classes.chipFocused]: props.isFocused
-            })}
+            }, props.data.class)}
             onDelete={event => {
                 props.removeProps.onClick();
                 props.removeProps.onMouseDown(event);
@@ -174,10 +176,17 @@ class FuseChipSelect extends Component {
     render()
     {
         return (
-            <CreatableSelect
-                {...this.props}
-                components={components}
-            />
+            this.props.variant === 'fixed' ? (
+                <Select
+                    {...this.props}
+                    components={components}
+                />
+            ) : (
+                <CreatableSelect
+                    {...this.props}
+                    components={components}
+                />
+            )
         );
     }
 }

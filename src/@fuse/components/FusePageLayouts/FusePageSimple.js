@@ -78,13 +78,16 @@ const styles = theme => ({
         '-webkit-overflow-scrolling': 'touch',
         '&.ps'                      : {
             overflow: 'hidden!important'
+        },
+        '& $contentCard'              : {
+            borderRadius: 8
         }
     },
     contentCard                   : {
         display                     : 'flex',
         flexDirection               : 'column',
         flex                        : '1 1 auto',
-        boxShadow                   : theme.shadows[5],
+        boxShadow                   : theme.shadows[1],
         overflow                    : 'auto',
         '-webkit-overflow-scrolling': 'touch'
     },
@@ -100,6 +103,7 @@ const styles = theme => ({
         flex: '1 0 auto'
     },
     sidebarWrapper                : {
+        overflow       : 'hidden',
         backgroundColor: 'transparent',
         position       : 'absolute',
         '&.permanent'  : {
