@@ -1,9 +1,9 @@
 {
     "name": "fuse-react-app",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "private": true,
     "dependencies": {
-        "@material-ui/core": "3.1.2",
+        "@material-ui/core": "3.2.0",
         "@material-ui/icons": "3.0.1",
         "auth0-lock": "11.10.0",
         "autosuggest-highlight": "3.1.1",
@@ -11,8 +11,8 @@
         "axios-mock-adapter": "1.15.0",
         "babel-polyfill": "7.0.0-beta.3",
         "chart.js": "2.7.2",
-        "downshift": "2.2.3",
-        "firebase": "5.5.2",
+        "downshift": "3.0.0",
+        "firebase": "5.5.3",
         "formsy-react": "1.1.5",
         "google-map-react": "1.0.9",
         "jss-extend": "6.2.0",
@@ -34,7 +34,9 @@
         "react-dnd": "2.6.0",
         "react-dnd-html5-backend": "2.6.0",
         "react-dom": "16.5.2",
-        "react-number-format": "3.6.1",
+        "react-jss": "8.6.1",
+        "react-loadable": "5.5.0",
+        "react-number-format": "3.6.2",
         "react-popper": "1.0.2",
         "react-redux": "5.0.7",
         "react-router-config": "4.4.0-beta.1",
@@ -55,7 +57,9 @@
         "build-css-helpers": "./node_modules/.bin/tailwind build ./src/styles/fuse-helpers.tailwind.css -c ./tailwind.js -o ./src/styles/fuse-helpers.css && postcss --use autoprefixer -o ./src/styles/fuse-helpers.css ./src/styles/fuse-helpers.css",
         "test": "cross-env NODE_PATH=src react-scripts test --env=node",
         "eject": "cross-env NODE_PATH=src react-scripts eject",
-        "build-docs": "babel-node src/main/content/components/material-ui/build.js"
+        "build-docs": "babel-node src/main/content/components/material-ui/build.js",
+        "build-stats": "yarn run build -- --stats",
+        "bundle-report": "yarn run build-stats && webpack-bundle-analyzer build/bundle-stats.json"
     },
     "devDependencies": {
         "@babel/core": "7.0.0-rc.1",
@@ -65,7 +69,8 @@
         "js-beautify": "1.8.6",
         "marked": "0.5.1",
         "postcss-cli": "6.0.0",
-        "tailwindcss": "0.6.6"
+        "tailwindcss": "0.6.6",
+        "webpack-bundle-analyzer": "3.0.2"
     },
     "browserslist": [
         ">0.2%",
