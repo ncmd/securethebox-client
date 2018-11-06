@@ -6,7 +6,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import * as Actions from 'store/actions';
 import {AppBar, Hidden, Icon, IconButton, Toolbar, Drawer, MuiThemeProvider} from '@material-ui/core';
-import {FuseScrollbars, FuseMessage, FuseThemes} from '@fuse';
+import {FuseScrollbars, FuseMessage, FuseThemes, FuseDialog} from '@fuse';
 import classNames from 'classnames';
 import _ from '@lodash';
 
@@ -87,7 +87,9 @@ const styles = theme => ({
         '-webkit-overflow-scrolling': 'touch'
     },
     navbarWrapper      : {
-        zIndex: 4
+        width   : navbarWidth,
+        minWidth: navbarWidth,
+        zIndex  : 4
     },
     navbarPaperWrapper : {},
     navbar             : {
@@ -117,6 +119,10 @@ const styles = theme => ({
     },
     navbarRight        : {
         right: 0
+    },
+    navbarWrapperFolded: {
+        width   : 64,
+        minWidth: 64
     },
     navbarFolded       : {
         position: 'absolute',
@@ -268,7 +274,11 @@ class FuseLayout1 extends Component {
 
         const navBarTemplate = (
             <MuiThemeProvider theme={FuseThemes[settings.theme.navbar]}>
-                <div id="fuse-navbar" className={classes.navbarWrapper}>
+                <div id="fuse-navbar"
+                     className={classNames(
+                         classes.navbarWrapper,
+                         layoutConfig.navbar.folded && classes.navbarWrapperFolded)}
+                >
                     <Hidden mdDown>
                         <div
                             className={classNames(
@@ -381,13 +391,7 @@ class FuseLayout1 extends Component {
                                         navBarTemplate
                                     )}
 
-                                    <div
-                                        className={classNames(
-                                            classes.contentWrapper,
-                                            layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'left' && 'md:ml-64',
-                                            layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'right' && 'md:mr-64'
-                                        )}
-                                    >
+                                    <div className={classes.contentWrapper}>
 
                                         {toolbar && layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'below' && (
                                             toolbarTemplate
@@ -395,6 +399,7 @@ class FuseLayout1 extends Component {
 
                                         <div className={classes.content}>
                                             <FuseMessage/>
+                                            <FuseDialog/>
                                             {renderRoutes(this.props.routes)}
                                             {children}
                                         </div>
@@ -452,13 +457,7 @@ class FuseLayout1 extends Component {
                                     navBarTemplate
                                 )}
 
-                                <div
-                                    className={classNames(
-                                        classes.contentWrapper,
-                                        layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'left' && 'lg:ml-64',
-                                        layoutConfig.navbar.display && layoutConfig.navbar.folded && layoutConfig.navbar.position === 'right' && 'lg:mr-64'
-                                    )}
-                                >
+                                <div className={classes.contentWrapper}>
                                     {toolbar && layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'below' && layoutConfig.toolbar.style === 'fixed' && (
                                         toolbarTemplate
                                     )}
@@ -469,6 +468,7 @@ class FuseLayout1 extends Component {
                                         )}
 
                                         <FuseMessage/>
+                                        <FuseDialog/>
 
                                         {renderRoutes(this.props.routes)}
                                         {children}
