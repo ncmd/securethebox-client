@@ -87,7 +87,7 @@ const styles = theme => ({
         '-webkit-overflow-scrolling': 'touch'
     },
     navbarWrapper      : {
-        zIndex                        : 4,
+        zIndex                      : 4,
         [theme.breakpoints.up('lg')]: {
             width   : navbarWidth,
             minWidth: navbarWidth
@@ -123,8 +123,10 @@ const styles = theme => ({
         right: 0
     },
     navbarWrapperFolded: {
-        width   : 64,
-        minWidth: 64
+        [theme.breakpoints.up('lg')]: {
+            width   : 64,
+            minWidth: 64
+        }
     },
     navbarFolded       : {
         position: 'absolute',
@@ -323,7 +325,7 @@ class FuseLayout1 extends Component {
             <MuiThemeProvider theme={FuseThemes[settings.theme.toolbar]}>
                 <AppBar id="fuse-toolbar" className={classNames(classes.toolbarWrapper)} color="default">
                     <Toolbar className="p-0">
-                        {layoutConfig.navbar.position === 'left' && (
+                        {layoutConfig.navbar.display && layoutConfig.navbar.position === 'left' && (
                             <Hidden lgUp>
                                 <IconButton
                                     className={classNames(classes.navbarButton, 'w-64 h-64 rounded-none', layoutConfig.navbar.position)}
@@ -337,7 +339,7 @@ class FuseLayout1 extends Component {
                         <div className={classes.toolbar}>
                             {toolbar}
                         </div>
-                        {layoutConfig.navbar.position === 'right' && (
+                        {layoutConfig.navbar.display && layoutConfig.navbar.position === 'right' && (
                             <Hidden lgUp>
                                 <IconButton
                                     className={classNames(classes.navbarButton, 'w-64 h-64 rounded-none', layoutConfig.navbar.position)}
@@ -400,7 +402,6 @@ class FuseLayout1 extends Component {
                                         )}
 
                                         <div className={classes.content}>
-                                            <FuseMessage/>
                                             <FuseDialog/>
                                             {renderRoutes(this.props.routes)}
                                             {children}
@@ -434,6 +435,8 @@ class FuseLayout1 extends Component {
                         {layoutConfig.rightSidePanel.display && (
                             rightSidePanel
                         )}
+
+                        <FuseMessage/>
                     </div>
                 );
             }
@@ -469,7 +472,6 @@ class FuseLayout1 extends Component {
                                             toolbarTemplate
                                         )}
 
-                                        <FuseMessage/>
                                         <FuseDialog/>
 
                                         {renderRoutes(this.props.routes)}
@@ -500,6 +502,8 @@ class FuseLayout1 extends Component {
                         {layoutConfig.rightSidePanel.display && (
                             rightSidePanel
                         )}
+
+                        <FuseMessage/>
                     </div>
                 );
             }
