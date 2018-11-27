@@ -8,7 +8,7 @@ import auth0Service from 'auth0Service';
 import jwtService from 'jwtService';
 
 class Auth extends Component {
-
+    /*eslint-disable-next-line no-useless-constructor*/
     constructor(props)
     {
         super(props);
@@ -16,17 +16,17 @@ class Auth extends Component {
         /**
          * Comment the line if you do not use JWt
          */
-        this.jwtCheck();
+        //this.jwtCheck();
 
         /**
          * Comment the line if you do not use Auth0
          */
-        this.auth0Check();
+        //this.auth0Check();
 
         /**
          * Comment the line if you do not use Firebase
          */
-        this.firebaseCheck();
+        //this.firebaseCheck();
     }
 
     jwtCheck = () => {
