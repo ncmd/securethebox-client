@@ -1,25 +1,16 @@
 import React from 'react';
-import {ListSubheader, withStyles} from '@material-ui/core';
+import {ListSubheader} from '@material-ui/core';
+import {makeStyles} from '@material-ui/styles';
+import {FuseUtils} from '@fuse';
 import {withRouter} from 'react-router-dom';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import {useSelector} from 'react-redux';
 import FuseNavVerticalCollapse from './FuseNavVerticalCollapse';
 import FuseNavVerticalItem from './FuseNavVerticalItem';
 import FuseNavVerticalLink from './FuseNavVerticalLink';
 
-const propTypes = {
-    item: PropTypes.shape(
-        {
-            id      : PropTypes.string.isRequired,
-            title   : PropTypes.string,
-            children: PropTypes.array
-        })
-};
-
-const defaultProps = {};
-
-const styles = theme => ({
+const useStyles = makeStyles({
     item: {
         height      : 40,
         width       : 'calc(100% - 16px)',
@@ -28,20 +19,24 @@ const styles = theme => ({
     }
 });
 
-function FuseNavVerticalGroup({classes, item, nestedLevel, userRole, active})
+function FuseNavVerticalGroup(props)
 {
-    if ( item.auth && (!item.auth.includes(userRole) || (userRole !== 'guest' && item.auth.length === 1 && item.auth.includes('guest'))) )
+    const userRole = useSelector(({auth}) => auth.user.role);
+
+    const classes = useStyles(props);
+    const {item, nestedLevel, active} = props;
+    let paddingValue = 40 + (nestedLevel * 16);
+    const listItemPadding = nestedLevel > 0 ? 'pl-' + (paddingValue > 80 ? 80 : paddingValue) : 'pl-24';
+
+    if ( !FuseUtils.hasPermission(item.auth, userRole) )
     {
         return null;
     }
 
-    let paddingValue = 40 + (nestedLevel * 16);
-    const listItemPadding = nestedLevel > 0 ? 'pl-' + (paddingValue > 80 ? 80 : paddingValue) : 'pl-24';
-
     return (
         <React.Fragment>
 
-            <ListSubheader disableSticky={true} className={classNames(classes.item, listItemPadding, "list-subheader flex items-center")}>
+            <ListSubheader disableSticky={true} className={clsx(classes.item, listItemPadding, "list-subheader flex items-center")}>
                 <span className="list-subheader-text uppercase text-12">
                     {item.title}
                 </span>
@@ -79,16 +74,17 @@ function FuseNavVerticalGroup({classes, item, nestedLevel, userRole, active})
     );
 }
 
-function mapStateToProps({auth})
-{
-    return {
-        userRole: auth.user.role
-    }
-}
+FuseNavVerticalGroup.propTypes = {
+    item: PropTypes.shape(
+        {
+            id      : PropTypes.string.isRequired,
+            title   : PropTypes.string,
+            children: PropTypes.array
+        })
+};
 
-FuseNavVerticalGroup.propTypes = propTypes;
-FuseNavVerticalGroup.defaultProps = defaultProps;
+FuseNavVerticalGroup.defaultProps = {};
 
-const NavVerticalGroup = withStyles(styles, {withTheme: true})(withRouter(connect(mapStateToProps)(FuseNavVerticalGroup)));
+const NavVerticalGroup = withRouter(React.memo(FuseNavVerticalGroup));
 
 export default NavVerticalGroup;

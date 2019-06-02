@@ -1,26 +1,15 @@
 import React from 'react';
-import {withStyles, Icon, ListItem, ListItemText} from '@material-ui/core';
-import {NavLink, withRouter} from 'react-router-dom';
-import classNames from 'classnames';
+import {Icon, ListItem, ListItemText} from '@material-ui/core';
+import {FuseUtils, NavLinkAdapter} from '@fuse';
+import {withRouter} from 'react-router-dom';
+import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import {useDispatch, useSelector} from 'react-redux';
 import * as Actions from 'app/store/actions';
 import FuseNavBadge from './../FuseNavBadge';
+import {makeStyles} from '@material-ui/styles';
 
-const propTypes = {
-    item: PropTypes.shape(
-        {
-            id   : PropTypes.string.isRequired,
-            title: PropTypes.string,
-            icon : PropTypes.string,
-            url  : PropTypes.string
-        })
-};
-
-const defaultProps = {};
-
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
         minHeight          : 48,
         '&.active'         : {
@@ -38,7 +27,7 @@ const styles = theme => ({
         '& .list-item-text': {
             padding: '0 0 0 16px'
         },
-        color              : 'inherit!important',
+        color              : theme.palette.text.primary,
         textDecoration     : 'none!important',
         '&.dense'          : {
             padding            : '8px 12px 8px 12px',
@@ -48,11 +37,17 @@ const styles = theme => ({
             }
         }
     }
-});
+}));
 
-function FuseNavHorizontalItem({item, classes, nestedLevel, userRole, navbarCloseMobile, dense})
+function FuseNavHorizontalItem(props)
 {
-    if ( item.auth && (!item.auth.includes(userRole) || (userRole !== 'guest' && item.auth.length === 1 && item.auth.includes('guest'))) )
+    const dispatch = useDispatch();
+    const userRole = useSelector(({auth}) => auth.user.role);
+
+    const classes = useStyles(props);
+    const {item, dense} = props;
+
+    if ( !FuseUtils.hasPermission(item.auth, userRole) )
     {
         return null;
     }
@@ -60,15 +55,15 @@ function FuseNavHorizontalItem({item, classes, nestedLevel, userRole, navbarClos
     return (
         <ListItem
             button
-            component={NavLink}
+            component={NavLinkAdapter}
             to={item.url}
             activeClassName="active"
-            className={classNames("list-item", classes.root, dense && "dense")}
-            onClick={navbarCloseMobile}
+            className={clsx("list-item", classes.root, dense && "dense")}
+            onClick={ev => dispatch(Actions.navbarCloseMobile())}
             exact={item.exact}
         >
             {item.icon && (
-                <Icon className="list-item-icon text-16 flex-no-shrink" color="action">{item.icon}</Icon>
+                <Icon className="list-item-icon text-16 flex-shrink-0" color="action">{item.icon}</Icon>
             )}
             <ListItemText className="list-item-text" primary={item.title} classes={{primary: 'text-14 list-item-text-primary'}}/>
             {item.badge && (
@@ -78,23 +73,18 @@ function FuseNavHorizontalItem({item, classes, nestedLevel, userRole, navbarClos
     );
 }
 
-function mapDispatchToProps(dispatch)
-{
-    return bindActionCreators({
-        navbarCloseMobile: Actions.navbarCloseMobile
-    }, dispatch);
-}
+FuseNavHorizontalItem.propTypes = {
+    item: PropTypes.shape(
+        {
+            id   : PropTypes.string.isRequired,
+            title: PropTypes.string,
+            icon : PropTypes.string,
+            url  : PropTypes.string
+        })
+};
 
-function mapStateToProps({auth})
-{
-    return {
-        userRole: auth.user.role
-    }
-}
+FuseNavHorizontalItem.defaultProps = {};
 
-FuseNavHorizontalItem.propTypes = propTypes;
-FuseNavHorizontalItem.defaultProps = defaultProps;
-
-const NavHorizontalItem = withStyles(styles, {withTheme: true})(withRouter(connect(mapStateToProps, mapDispatchToProps)(FuseNavHorizontalItem)));
+const NavHorizontalItem = withRouter(React.memo(FuseNavHorizontalItem));
 
 export default NavHorizontalItem;

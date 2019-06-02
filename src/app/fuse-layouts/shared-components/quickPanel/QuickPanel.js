@@ -1,46 +1,37 @@
-import React, {Component} from 'react';
-import {withStyles, Drawer, Typography} from '@material-ui/core/';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {Divider, Drawer, Icon, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, Switch, Typography} from '@material-ui/core';
+import {FuseScrollbars} from '@fuse';
+import moment from 'moment';
+import {useSelector, useDispatch} from 'react-redux';
 import * as Actions from './store/actions/index'
+import withReducer from 'app/store/withReducer';
+import reducer from './store/reducers';
+import {makeStyles} from '@material-ui/styles';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
-        width  : 280,
-        padding: 24
+        width: 280
     }
-});
+}));
 
-class QuickPanel extends Component {
+function QuickPanel(props)
+{
+    const dispatch = useDispatch();
 
-    render()
-    {
-        const {classes, state, toggleQuickPanel} = this.props;
-        return (
-            <Drawer
-                classes={{paper: classes.root}}
-                open={state}
-                anchor="right"
-                onClose={() => toggleQuickPanel(false)}
-            >
+    const classes = useStyles();
+
+    return (
+        <Drawer
+            classes={{paper: classes.root}}
+            open={state}
+            anchor="right"
+            onClose={ev => dispatch(Actions.toggleQuickPanel())}
+        >
+            <FuseScrollbars>
                 <Typography>Quick Panel</Typography>
-            </Drawer>
-        );
-    }
+            </FuseScrollbars>
+        </Drawer>
+    );
 }
 
-function mapDispatchToProps(dispatch)
-{
-    return bindActionCreators({
-        toggleQuickPanel: Actions.toggleQuickPanel
-    }, dispatch);
-}
-
-function mapStateToProps({quickPanel})
-{
-    return {
-        state: quickPanel.state
-    }
-}
-
-export default withStyles(styles, {withTheme: true})(connect(mapStateToProps, mapDispatchToProps)(QuickPanel));
+export default withReducer('quickPanel', reducer)(QuickPanel);

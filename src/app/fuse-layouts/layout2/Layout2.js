@@ -1,10 +1,9 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core';
-import {FuseScrollbars, FuseMessage, FuseDialog} from '@fuse';
-import {withRouter} from 'react-router-dom';
+import {makeStyles} from '@material-ui/styles';
+import {FuseScrollbars, FuseMessage, FuseDialog, FuseSuspense} from '@fuse';
 import {renderRoutes} from 'react-router-config'
-import {connect} from 'react-redux';
-import classNames from 'classnames';
+import {useSelector} from 'react-redux';
+import clsx from 'clsx';
 import AppContext from 'app/AppContext';
 import LeftSideLayout2 from './components/LeftSideLayout2';
 import ToolbarLayout2 from './components/ToolbarLayout2';
@@ -13,7 +12,7 @@ import FooterLayout2 from './components/FooterLayout2';
 import RightSideLayout2 from './components/RightSideLayout2';
 import SettingsPanel from 'app/fuse-layouts/shared-components/SettingsPanel';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root          : {
         position     : 'relative',
         display      : 'flex',
@@ -61,32 +60,34 @@ const styles = theme => ({
         display: 'flex',
         flex   : '1 0 auto'
     }
-});
+}));
 
-const Layout2 = ({classes, settings, children}) => {
+function Layout2(props)
+{
+    const config = useSelector(({fuse}) => fuse.settings.current.layout.config);
 
-    const layoutConfig = settings.layout.config;
+    const classes = useStyles(props);
 
     return (
         <AppContext.Consumer>
             {({routes}) => (
-                <div id="fuse-layout" className={classNames(classes.root, layoutConfig.mode)}>
+                <div id="fuse-layout" className={clsx(classes.root, config.mode)}>
 
-                    {layoutConfig.leftSidePanel.display && (
+                    {config.leftSidePanel.display && (
                         <LeftSideLayout2/>
                     )}
 
                     <div className="flex flex-1 flex-col overflow-hidden relative">
 
-                        {layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'above' && (
+                        {config.toolbar.display && config.toolbar.position === 'above' && (
                             <ToolbarLayout2/>
                         )}
 
-                        {layoutConfig.navbar.display && (
+                        {config.navbar.display && (
                             <NavbarWrapperLayout2/>
                         )}
 
-                        {layoutConfig.toolbar.display && layoutConfig.toolbar.position === 'below' && (
+                        {config.toolbar.display && config.toolbar.position === 'below' && (
                             <ToolbarLayout2/>
                         )}
 
@@ -95,16 +96,22 @@ const Layout2 = ({classes, settings, children}) => {
                             <FuseDialog/>
 
                             <div className="flex flex-auto flex-col relative">
-                                {renderRoutes(routes)}
-                                {children}
-                                {layoutConfig.footer.display && layoutConfig.footer.style === 'static' && (
+
+                                <FuseSuspense>
+                                    {renderRoutes(routes)}
+                                </FuseSuspense>
+
+                                {props.children}
+
+                                {config.footer.display && config.footer.style === 'static' && (
                                     <FooterLayout2/>
                                 )}
+
                             </div>
 
                         </FuseScrollbars>
 
-                        {layoutConfig.footer.display && layoutConfig.footer.style === 'fixed' && (
+                        {config.footer.display && config.footer.style === 'fixed' && (
                             <FooterLayout2/>
                         )}
 
@@ -112,7 +119,7 @@ const Layout2 = ({classes, settings, children}) => {
 
                     </div>
 
-                    {layoutConfig.rightSidePanel.display && (
+                    {config.rightSidePanel.display && (
                         <RightSideLayout2/>
                     )}
 
@@ -120,13 +127,6 @@ const Layout2 = ({classes, settings, children}) => {
                 </div>)}
         </AppContext.Consumer>
     );
-};
-
-function mapStateToProps({fuse})
-{
-    return {
-        settings: fuse.settings.current
-    }
 }
 
-export default withStyles(styles, {withTheme: true})(withRouter(connect(mapStateToProps)(Layout2)));
+export default Layout2;

@@ -1,4 +1,4 @@
-import {createMuiTheme} from '@material-ui/core';
+import {createMuiTheme} from '@material-ui/core/styles';
 import {fuseDark} from '@fuse/fuse-colors';
 import lightBlue from '@material-ui/core/colors/lightBlue';
 import red from '@material-ui/core/colors/red';
@@ -57,7 +57,13 @@ export const defaultThemeOptions = {
 
 export const mustHaveThemeOptions = {
     typography: {
-        htmlFontSize: 10
+        htmlFontSize: 10,
+        body1       : {
+            fontSize: "1.4rem",
+        },
+        body2       : {
+            fontSize: "1.4rem",
+        }
     }
 };
 

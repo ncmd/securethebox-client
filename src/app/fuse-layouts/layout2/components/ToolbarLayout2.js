@@ -1,29 +1,34 @@
 import React from 'react';
-import {AppBar, Hidden, MuiThemeProvider, Toolbar, withStyles} from '@material-ui/core';
+import {AppBar, Hidden, Toolbar} from '@material-ui/core';
+import {makeStyles, ThemeProvider} from '@material-ui/styles';
 import {FuseSearch, FuseShortcuts} from '@fuse';
-import connect from 'react-redux/es/connect/connect';
-import {withRouter} from 'react-router-dom';
 import NavbarMobileToggleButton from 'app/fuse-layouts/shared-components/NavbarMobileToggleButton';
 import QuickPanelToggleButton from 'app/fuse-layouts/shared-components/quickPanel/QuickPanelToggleButton';
+import ChatPanelToggleButton from 'app/fuse-layouts/shared-components/chatPanel/ChatPanelToggleButton';
+import UserMenu from 'app/fuse-layouts/shared-components/UserMenu';
+import {useSelector} from 'react-redux';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     separator: {
         width          : 1,
         height         : 64,
         backgroundColor: theme.palette.divider
     }
-});
+}));
 
-const ToolbarLayout2 = ({classes, settings, toolbarTheme}) => {
+function ToolbarLayout2(props)
+{
+    const config = useSelector(({fuse}) => fuse.settings.current.layout.config);
+    const toolbarTheme = useSelector(({fuse}) => fuse.settings.toolbarTheme);
 
-    const layoutConfig = settings.layout.config;
+    const classes = useStyles(props);
 
     return (
-        <MuiThemeProvider theme={toolbarTheme}>
+        <ThemeProvider theme={toolbarTheme}>
             <AppBar id="fuse-toolbar" className="flex relative z-10" color="default">
                 <Toolbar className="container p-0 lg:px-24">
 
-                    {layoutConfig.navbar.display && (
+                    {config.navbar.display && (
                         <Hidden lgUp>
                             <NavbarMobileToggleButton className="w-64 h-64 p-0"/>
                             <div className={classes.separator}/>
@@ -38,7 +43,18 @@ const ToolbarLayout2 = ({classes, settings, toolbarTheme}) => {
 
                     <div className="flex">
 
+                        <UserMenu/>
+
+                        <div className={classes.separator}/>
+
                         <FuseSearch/>
+
+                        <Hidden lgUp>
+
+                            <div className={classes.separator}/>
+
+                            <ChatPanelToggleButton/>
+                        </Hidden>
 
                         <div className={classes.separator}/>
 
@@ -47,16 +63,8 @@ const ToolbarLayout2 = ({classes, settings, toolbarTheme}) => {
 
                 </Toolbar>
             </AppBar>
-        </MuiThemeProvider>
+        </ThemeProvider>
     );
-};
-
-function mapStateToProps({fuse})
-{
-    return {
-        settings    : fuse.settings.current,
-        toolbarTheme: fuse.settings.toolbarTheme
-    }
 }
 
-export default withStyles(styles, {withTheme: true})(withRouter(connect(mapStateToProps)(ToolbarLayout2)));
+export default ToolbarLayout2;

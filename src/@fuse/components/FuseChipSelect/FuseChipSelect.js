@@ -1,11 +1,12 @@
 import React from 'react';
-import {withStyles, Paper, Chip, Typography, TextField, MenuItem} from '@material-ui/core';
+import {Paper, Chip, Typography, TextField, MenuItem} from '@material-ui/core';
 import {emphasize} from '@material-ui/core/styles/colorManipulator';
 import CreatableSelect from 'react-select/lib/Creatable';
 import Select from 'react-select';
-import classNames from 'classnames';
+import clsx from 'clsx';
+import {makeStyles} from '@material-ui/styles';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root            : {
         '& .fuse-chip-select__input': {
             color: theme.palette.text.primary
@@ -40,7 +41,8 @@ const styles = theme => ({
     },
     input           : {
         display: 'flex',
-        padding: 0
+        padding: 0,
+        height : 'auto'
     },
     valueContainer  : {
         display      : 'flex',
@@ -61,7 +63,7 @@ const styles = theme => ({
         )
     },
     noOptionsMessage: {
-        padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`
+        padding: `${theme.spacing()}px ${theme.spacing(2)}px`
     },
     singleValue     : {
         fontSize: 16
@@ -75,21 +77,23 @@ const styles = theme => ({
     paper           : {
         position : 'absolute',
         zIndex   : 2,
-        marginTop: theme.spacing.unit,
+        marginTop: theme.spacing(),
         left     : 0,
         right    : 0
     },
     divider         : {
-        height: theme.spacing.unit * 2
+        height: theme.spacing(2)
     }
-});
+}));
 
 function NoOptionsMessage(props)
 {
+    const classes = useStyles();
+
     return (
         <Typography
             color="textSecondary"
-            className={props.selectProps.classes.noOptionsMessage}
+            className={classes.noOptionsMessage}
             {...props.innerProps}
         >
             {props.children}
@@ -104,14 +108,16 @@ function inputComponent({inputRef, ...props})
 
 function Control(props)
 {
+    const classes = useStyles();
+
     return (
         <TextField
             fullWidth
-            className={classNames(props.selectProps.classes.root, props.selectProps.textFieldProps.variant)}
+            className={clsx(classes.root, props.selectProps.textFieldProps.variant)}
             InputProps={{
                 inputComponent,
                 inputProps: {
-                    className: props.selectProps.classes.input,
+                    className: classes.input,
                     inputRef : props.innerRef,
                     children : props.children,
                     ...props.innerProps
@@ -141,10 +147,12 @@ function Option(props)
 
 function Placeholder(props)
 {
+    const classes = useStyles();
+
     return (
         <Typography
             color="textSecondary"
-            className={props.selectProps.classes.placeholder}
+            className={classes.placeholder}
             {...props.innerProps}
         >
             {props.children}
@@ -154,8 +162,10 @@ function Placeholder(props)
 
 function SingleValue(props)
 {
+    const classes = useStyles();
+
     return (
-        <Typography className={props.selectProps.classes.singleValue} {...props.innerProps}>
+        <Typography className={classes.singleValue} {...props.innerProps}>
             {props.children}
         </Typography>
     );
@@ -163,17 +173,21 @@ function SingleValue(props)
 
 function ValueContainer(props)
 {
-    return <div className={props.selectProps.classes.valueContainer}>{props.children}</div>;
+    const classes = useStyles();
+
+    return <div className={classes.valueContainer}>{props.children}</div>;
 }
 
 function MultiValue(props)
 {
+    const classes = useStyles();
+
     return (
         <Chip
             tabIndex={-1}
             label={props.children}
-            className={classNames(props.selectProps.classes.chip, {
-                [props.selectProps.classes.chipFocused]: props.isFocused
+            className={clsx(classes.chip, {
+                [classes.chipFocused]: props.isFocused
             }, props.data.class)}
             onDelete={event => {
                 props.removeProps.onClick();
@@ -185,8 +199,10 @@ function MultiValue(props)
 
 function Menu(props)
 {
+    const classes = useStyles();
+
     return (
-        <Paper square className={props.selectProps.classes.paper} {...props.innerProps}>
+        <Paper square className={classes.paper} {...props.innerProps}>
             {props.children}
         </Paper>
     );
@@ -203,7 +219,8 @@ const components = {
     ValueContainer
 };
 
-const FuseChipSelect = (props) => {
+function FuseChipSelect(props)
+{
     return (
         props.variant === 'fixed' ? (
             <Select
@@ -219,6 +236,6 @@ const FuseChipSelect = (props) => {
             />
         )
     );
-};
+}
 
-export default withStyles(styles, {withTheme: true})(FuseChipSelect);
+export default React.memo(FuseChipSelect);

@@ -1,27 +1,15 @@
 import React from 'react';
-import {withStyles, Icon, ListItem, ListItemText} from '@material-ui/core';
+import {Icon, ListItem, ListItemText} from '@material-ui/core';
+import {makeStyles} from '@material-ui/styles';
+import {FuseUtils} from '@fuse';
 import {withRouter} from 'react-router-dom';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import {useDispatch, useSelector} from 'react-redux';
 import * as Actions from 'app/store/actions';
 import FuseNavBadge from './../FuseNavBadge';
 
-const propTypes = {
-    item: PropTypes.shape(
-        {
-            id    : PropTypes.string.isRequired,
-            title : PropTypes.string,
-            icon  : PropTypes.string,
-            url   : PropTypes.string,
-            target: PropTypes.string
-        })
-};
-
-const defaultProps = {};
-
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     item: {
         height                     : 40,
         width                      : 'calc(100% - 16px)',
@@ -45,20 +33,25 @@ const styles = theme => ({
         },
         '& .list-item-icon'        : {},
         '& .list-item-text'        : {},
-        color                      : 'inherit!important',
+        color                      : theme.palette.text.primary,
         textDecoration             : 'none!important'
     }
-});
+}));
 
-function FuseNavVerticalLink({item, classes, nestedLevel, userRole, navbarCloseMobile, active})
+function FuseNavVerticalLink(props)
 {
-    if ( item.auth && (!item.auth.includes(userRole) || (userRole !== 'guest' && item.auth.length === 1 && item.auth.includes('guest'))) )
+    const dispatch = useDispatch();
+    const userRole = useSelector(({auth}) => auth.user.role);
+
+    const classes = useStyles(props);
+    const {item, nestedLevel, active} = props;
+    let paddingValue = 40 + (nestedLevel * 16);
+    const listItemPadding = nestedLevel > 0 ? 'pl-' + (paddingValue > 80 ? 80 : paddingValue) : 'pl-24';
+
+    if ( !FuseUtils.hasPermission(item.auth, userRole) )
     {
         return null;
     }
-
-    let paddingValue = 40 + (nestedLevel * 16);
-    const listItemPadding = nestedLevel > 0 ? 'pl-' + (paddingValue > 80 ? 80 : paddingValue) : 'pl-24';
 
     return (
         <ListItem
@@ -66,11 +59,11 @@ function FuseNavVerticalLink({item, classes, nestedLevel, userRole, navbarCloseM
             component="a"
             href={item.url}
             target={item.target ? item.target : "_blank"}
-            className={classNames(classes.item, listItemPadding, 'list-item', active)}
-            onClick={navbarCloseMobile}
+            className={clsx(classes.item, listItemPadding, 'list-item', active)}
+            onClick={ev => dispatch(Actions.navbarCloseMobile())}
         >
             {item.icon && (
-                <Icon className="list-item-icon text-16 flex-no-shrink" color="action">{item.icon}</Icon>
+                <Icon className="list-item-icon text-16 flex-shrink-0 mr-16" color="action">{item.icon}</Icon>
             )}
             <ListItemText className="list-item-text" primary={item.title} classes={{primary: 'text-14 list-item-text-primary'}}/>
             {item.badge && (
@@ -80,23 +73,18 @@ function FuseNavVerticalLink({item, classes, nestedLevel, userRole, navbarCloseM
     );
 }
 
-function mapDispatchToProps(dispatch)
-{
-    return bindActionCreators({
-        navbarCloseMobile: Actions.navbarCloseMobile
-    }, dispatch);
-}
+FuseNavVerticalLink.propTypes = {
+    item: PropTypes.shape(
+        {
+            id    : PropTypes.string.isRequired,
+            title : PropTypes.string,
+            icon  : PropTypes.string,
+            url   : PropTypes.string,
+            target: PropTypes.string
+        })
+};
+FuseNavVerticalLink.defaultProps = {};
 
-function mapStateToProps({auth, fuse})
-{
-    return {
-        userRole: auth.user.role
-    }
-}
-
-FuseNavVerticalLink.propTypes = propTypes;
-FuseNavVerticalLink.defaultProps = defaultProps;
-
-const NavVerticalLink = withStyles(styles, {withTheme: true})(withRouter(connect(mapStateToProps, mapDispatchToProps)(FuseNavVerticalLink)));
+const NavVerticalLink = withRouter(React.memo(FuseNavVerticalLink));
 
 export default NavVerticalLink;

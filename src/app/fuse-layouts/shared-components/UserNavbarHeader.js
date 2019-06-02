@@ -1,11 +1,12 @@
 import React from 'react';
-import {AppBar, Avatar, Typography, withStyles} from '@material-ui/core';
-import connect from 'react-redux/es/connect/connect';
-import classNames from 'classnames';
+import {AppBar, Avatar, Typography} from '@material-ui/core';
+import {makeStyles} from '@material-ui/styles';
+import clsx from 'clsx';
+import {useSelector} from 'react-redux';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root  : {
-        '& .user': {
+        '&.user': {
             '& .username, & .email': {
                 transition: theme.transitions.create('opacity', {
                     duration: theme.transitions.duration.shortest,
@@ -24,13 +25,22 @@ const styles = theme => ({
         boxSizing : 'content-box',
         left      : '50%',
         transform : 'translateX(-50%)',
+        transition: theme.transitions.create('all', {
+            duration: theme.transitions.duration.shortest,
+            easing  : theme.transitions.easing.easeInOut,
+        }),
         '& > img' : {
             borderRadius: '50%'
         }
     }
-});
+}));
 
-const UserNavbarHeader = ({user, classes}) => {
+function UserNavbarHeader(props)
+{
+    const user = useSelector(({auth}) => auth.user);
+
+    const classes = useStyles();
+
     return (
         <AppBar
             position="static"
@@ -42,19 +52,12 @@ const UserNavbarHeader = ({user, classes}) => {
             <Typography className="username text-16 whitespace-no-wrap" color="inherit">{user.data.displayName}</Typography>
             <Typography className="email text-13 mt-8 opacity-50 whitespace-no-wrap" color="inherit">{user.data.email}</Typography>
             <Avatar
-                className={classNames(classes.avatar, "avatar")}
+                className={clsx(classes.avatar, "avatar")}
                 alt="user photo"
                 src={user.data.photoURL && user.data.photoURL !== '' ? user.data.photoURL : "assets/images/avatars/profile.jpg"}
             />
         </AppBar>
     );
-};
-
-function mapStateToProps({fuse, auth})
-{
-    return {
-        user: auth.user
-    }
 }
 
-export default withStyles(styles, {withTheme: true})(connect(mapStateToProps)(UserNavbarHeader));
+export default UserNavbarHeader;

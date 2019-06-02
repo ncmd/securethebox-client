@@ -1,27 +1,15 @@
 import React from 'react';
-import {withStyles, Icon, ListItem, ListItemText} from '@material-ui/core';
+import {Icon, ListItem, ListItemText} from '@material-ui/core';
+import {makeStyles} from '@material-ui/styles';
+import {FuseUtils} from '@fuse';
 import {withRouter} from 'react-router-dom';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import {useDispatch, useSelector} from 'react-redux';
 import * as Actions from 'app/store/actions';
 import FuseNavBadge from './../FuseNavBadge';
 
-const propTypes = {
-    item: PropTypes.shape(
-        {
-            id    : PropTypes.string.isRequired,
-            title : PropTypes.string,
-            icon  : PropTypes.string,
-            url   : PropTypes.string,
-            target: PropTypes.string
-        })
-};
-
-const defaultProps = {};
-
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
         minHeight          : 48,
         '&.active'         : {
@@ -39,7 +27,7 @@ const styles = theme => ({
         '& .list-item-text': {
             padding: '0 0 0 16px'
         },
-        color              : 'inherit!important',
+        color              : theme.palette.text.primary,
         textDecoration     : 'none!important',
         '&.dense'          : {
             padding            : '8px 12px 8px 12px',
@@ -49,11 +37,17 @@ const styles = theme => ({
             }
         }
     }
-});
+}));
 
-function FuseNavHorizontalLink({item, classes, nestedLevel, userRole, navbarCloseMobile, dense})
+function FuseNavHorizontalLink(props)
 {
-    if ( item.auth && (!item.auth.includes(userRole) || (userRole !== 'guest' && item.auth.length === 1 && item.auth.includes('guest'))) )
+    const dispatch = useDispatch();
+    const userRole = useSelector(({auth}) => auth.user.role);
+
+    const classes = useStyles(props);
+    const {item, dense} = props;
+
+    if ( !FuseUtils.hasPermission(item.auth, userRole) )
     {
         return null;
     }
@@ -64,11 +58,11 @@ function FuseNavHorizontalLink({item, classes, nestedLevel, userRole, navbarClos
             component="a"
             href={item.url}
             target={item.target ? item.target : "_blank"}
-            className={classNames("list-item", classes.root, dense && "dense")}
-            onClick={navbarCloseMobile}
+            className={clsx("list-item", classes.root, dense && "dense")}
+            onClick={ev => dispatch(Actions.navbarCloseMobile())}
         >
             {item.icon && (
-                <Icon className="list-item-icon text-16 flex-no-shrink" color="action">{item.icon}</Icon>
+                <Icon className="list-item-icon text-16 flex-shrink-0" color="action">{item.icon}</Icon>
             )}
             <ListItemText className="list-item-text" primary={item.title} classes={{primary: 'text-14 list-item-text-primary'}}/>
             {item.badge && (
@@ -78,23 +72,19 @@ function FuseNavHorizontalLink({item, classes, nestedLevel, userRole, navbarClos
     );
 }
 
-function mapDispatchToProps(dispatch)
-{
-    return bindActionCreators({
-        navbarCloseMobile: Actions.navbarCloseMobile
-    }, dispatch);
-}
+FuseNavHorizontalLink.propTypes = {
+    item: PropTypes.shape(
+        {
+            id    : PropTypes.string.isRequired,
+            title : PropTypes.string,
+            icon  : PropTypes.string,
+            url   : PropTypes.string,
+            target: PropTypes.string
+        })
+};
 
-function mapStateToProps({auth})
-{
-    return {
-        userRole: auth.user.role
-    }
-}
+FuseNavHorizontalLink.defaultProps = {};
 
-FuseNavHorizontalLink.propTypes = propTypes;
-FuseNavHorizontalLink.defaultProps = defaultProps;
-
-const NavHorizontalLink = withStyles(styles, {withTheme: true})(withRouter(connect(mapStateToProps, mapDispatchToProps)(FuseNavHorizontalLink)));
+const NavHorizontalLink = withRouter(React.memo(FuseNavHorizontalLink));
 
 export default NavHorizontalLink;

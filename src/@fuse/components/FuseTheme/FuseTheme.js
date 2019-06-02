@@ -1,23 +1,17 @@
 import React from 'react';
-import {MuiThemeProvider} from '@material-ui/core';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import {ThemeProvider} from '@material-ui/styles';
+import {useSelector} from 'react-redux';
 
-function FuseTheme({children, mainTheme})
+function FuseTheme(props)
 {
+    const mainTheme = useSelector(({fuse}) => fuse.settings.mainTheme);
+
     // console.warn('FuseTheme:: rendered',mainTheme);
     return (
-        <MuiThemeProvider theme={mainTheme}>
-            {children}
-        </MuiThemeProvider>
+        <ThemeProvider theme={mainTheme}>
+            {props.children}
+        </ThemeProvider>
     )
 }
 
-function mapStateToProps({fuse})
-{
-    return {
-        mainTheme: fuse.settings.mainTheme
-    }
-}
-
-export default withRouter(connect(mapStateToProps)(FuseTheme));
+export default React.memo(FuseTheme);

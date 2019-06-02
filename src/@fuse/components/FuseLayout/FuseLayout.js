@@ -1,21 +1,20 @@
-import React, {Component} from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import React, {useContext, useEffect} from 'react';
+import {makeStyles} from '@material-ui/styles';
 import {withRouter} from 'react-router-dom';
 import {matchRoutes} from 'react-router-config'
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import * as Actions from 'app/store/actions';
 import {FuseLayouts} from '@fuse';
 import _ from '@lodash';
 import AppContext from 'app/AppContext';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
         backgroundColor                   : theme.palette.background.default,
         color                             : theme.palette.text.primary,
         '& code:not([class*="language-"])': {
             color          : theme.palette.secondary.dark,
-            backgroundColor: '#f5f5f5',
+            backgroundColor: '#F5F5F5',
             padding        : '2px 3px',
             borderRadius   : 2,
             lineHeight     : 1.7
@@ -40,75 +39,49 @@ const styles = theme => ({
             borderColor: theme.palette.divider
         }
     }
-});
+}));
 
-class FuseLayout extends Component {
+function FuseLayout(props)
+{
+    const dispatch = useDispatch();
+    const defaultSettings = useSelector(({fuse}) => fuse.settings.defaults);
+    const settings = useSelector(({fuse}) => fuse.settings.current);
 
-    constructor(props, context)
-    {
-        super(props);
-        this.appContext = context;
-        this.routeSettingsCheck();
-    }
+    const classes = useStyles(props);
+    const appContext = useContext(AppContext);
+    const {routes} = appContext;
 
-    componentDidUpdate(prevProps)
-    {
-        if ( !_.isEqual(this.props.location.pathname, prevProps.location.pathname) )
+    useEffect(() => {
+        function routeSettingsCheck()
         {
-            this.routeSettingsCheck();
-        }
-    }
+            const matched = matchRoutes(routes, props.location.pathname)[0];
 
-    routeSettingsCheck = () => {
-        const {routes} = this.appContext;
-
-        const matched = matchRoutes(routes, this.props.location.pathname)[0];
-
-        if ( matched && matched.route.settings )
-        {
-            const routeSettings = _.merge({}, this.props.defaultSettings, matched.route.settings);
-            if ( !_.isEqual(this.props.settings, routeSettings) )
+            if ( matched && matched.route.settings )
             {
-                this.props.setSettings(_.merge({}, routeSettings));
+                const routeSettings = _.merge({}, defaultSettings, matched.route.settings);
+                if ( !_.isEqual(settings, routeSettings) )
+                {
+                    dispatch(Actions.setSettings(_.merge({}, routeSettings)));
+                }
+            }
+            else
+            {
+                if ( !_.isEqual(settings, defaultSettings) )
+                {
+                    dispatch(Actions.resetSettings());
+                }
             }
         }
-        else
-        {
-            if ( !_.isEqual(this.props.settings, this.props.defaultSettings) )
-            {
-                this.props.resetSettings();
-            }
-        }
-    };
 
-    render()
-    {
-        const {settings, classes} = this.props;
-        // console.warn('FuseLayout:: rendered');
+        routeSettingsCheck();
+    }, [defaultSettings, dispatch, props.location.pathname, routes, settings]);
 
-        const Layout = FuseLayouts[settings.layout.style];
-        return (
-            <Layout className={classes.root} {...this.props}/>
-        );
-    }
+    // console.warn('FuseLayout:: rendered');
+
+    const Layout = FuseLayouts[settings.layout.style];
+    return (
+        <Layout classes={{root: classes.root}} {...props}/>
+    );
 }
 
-function mapDispatchToProps(dispatch)
-{
-    return bindActionCreators({
-        setSettings  : Actions.setSettings,
-        resetSettings: Actions.resetSettings
-    }, dispatch);
-}
-
-function mapStateToProps({fuse})
-{
-    return {
-        defaultSettings: fuse.settings.defaults,
-        settings       : fuse.settings.current
-    }
-}
-
-FuseLayout.contextType = AppContext;
-
-export default withStyles(styles, {withTheme: true})(withRouter(connect(mapStateToProps, mapDispatchToProps)(FuseLayout)));
+export default withRouter(React.memo(FuseLayout));

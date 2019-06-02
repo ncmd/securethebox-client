@@ -1,15 +1,15 @@
 import React from 'react';
-import {Paper, Drawer, Hidden, MuiThemeProvider, withStyles} from '@material-ui/core';
-import {bindActionCreators} from 'redux';
+import {Paper, Drawer, Hidden} from '@material-ui/core';
+import {ThemeProvider, makeStyles} from '@material-ui/styles';
 import * as Actions from 'app/store/actions';
-import connect from 'react-redux/es/connect/connect';
-import classNames from 'classnames';
-import NavbarMobileLayout3 from 'app/fuse-layouts/layout3/components/NavbarMobileLayout3';
+import clsx from 'clsx';
+import NavbarMobileLayout3 from './NavbarMobileLayout3';
 import NavbarLayout3 from './NavbarLayout3';
+import {useDispatch, useSelector} from 'react-redux';
 
 const navbarWidth = 280;
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     navbar      : {
         display   : 'flex',
         overflow  : 'hidden',
@@ -33,14 +33,21 @@ const styles = theme => ({
         }),
         boxShadow    : theme.shadows[3]
     }
-});
+}));
 
-const NavbarWrapperLayout3 = ({classes, navbarTheme, children, navbar, navbarOpenFolded, navbarCloseFolded, navbarCloseMobile}) => {
+function NavbarWrapperLayout3(props)
+{
+    const dispatch = useDispatch();
+    const navbarTheme = useSelector(({fuse}) => fuse.settings.navbarTheme);
+    const navbar = useSelector(({fuse}) => fuse.navbar);
+
+    const classes = useStyles(props);
+
     return (
-        <MuiThemeProvider theme={navbarTheme}>
+        <ThemeProvider theme={navbarTheme}>
 
             <Hidden mdDown>
-                <Paper className={classNames(classes.navbar)} square={true}>
+                <Paper className={clsx(classes.navbar)} square={true}>
                     <NavbarLayout3/>
                 </Paper>
             </Hidden>
@@ -53,7 +60,7 @@ const NavbarWrapperLayout3 = ({classes, navbarTheme, children, navbar, navbarOpe
                     classes={{
                         paper: classes.navbarMobile
                     }}
-                    onClose={navbarCloseMobile}
+                    onClose={ev => dispatch(Actions.navbarCloseMobile())}
                     ModalProps={{
                         keepMounted: true // Better open performance on mobile.
                     }}
@@ -61,25 +68,8 @@ const NavbarWrapperLayout3 = ({classes, navbarTheme, children, navbar, navbarOpe
                     <NavbarMobileLayout3/>
                 </Drawer>
             </Hidden>
-        </MuiThemeProvider>
+        </ThemeProvider>
     );
-};
-
-function mapDispatchToProps(dispatch)
-{
-    return bindActionCreators({
-        navbarOpenFolded : Actions.navbarOpenFolded,
-        navbarCloseFolded: Actions.navbarCloseFolded,
-        navbarCloseMobile: Actions.navbarCloseMobile
-    }, dispatch);
 }
 
-function mapStateToProps({fuse})
-{
-    return {
-        navbarTheme: fuse.settings.navbarTheme,
-        navbar     : fuse.navbar
-    }
-}
-
-export default withStyles(styles, {withTheme: true})(connect(mapStateToProps, mapDispatchToProps)(NavbarWrapperLayout3));
+export default NavbarWrapperLayout3;

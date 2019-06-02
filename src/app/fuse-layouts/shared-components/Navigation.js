@@ -1,24 +1,19 @@
 import React from 'react';
 import {FuseNavigation} from '@fuse';
-import connect from 'react-redux/es/connect/connect';
-import {withRouter} from 'react-router-dom';
-import classNames from 'classnames';
+import clsx from 'clsx';
+import {useSelector} from 'react-redux';
 
-const Navigation = ({navigation, layout, dense, className}) => {
-    return (
-        <FuseNavigation className={classNames("navigation", className)} navigation={navigation} layout={layout} dense={dense}/>
-    );
-};
-
-function mapStateToProps({fuse})
+function Navigation(props)
 {
-    return {
-        navigation: fuse.navigation
-    }
+    const navigation = useSelector(({fuse}) => fuse.navigation);
+
+    return (
+        <FuseNavigation className={clsx("navigation", props.className)} navigation={navigation} layout={props.layout} dense={props.dense}/>
+    );
 }
 
 Navigation.defaultProps = {
     layout: "vertical"
 };
 
-export default withRouter(connect(mapStateToProps)(Navigation));
+export default Navigation;

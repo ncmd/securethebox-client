@@ -1,13 +1,13 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom';
-import {FuseUtils} from '@fuse/index';
+import {FuseUtils} from '@fuse';
 import {ExampleConfig} from 'app/main/example/ExampleConfig';
 
 const routeConfigs = [
     ExampleConfig
 ];
 
- const routes = [
+const routes = [
     ...FuseUtils.generateRoutesFromConfigs(routeConfigs),
     {
         path     : '/',
@@ -15,4 +15,4 @@ const routeConfigs = [
     }
 ];
 
- export default routes;
+export default routes;

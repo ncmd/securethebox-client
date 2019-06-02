@@ -1,17 +1,17 @@
 import React from 'react';
-import {Drawer, Hidden, MuiThemeProvider, withStyles} from '@material-ui/core';
-import classNames from 'classnames';
-import {bindActionCreators} from 'redux';
+import {Drawer, Hidden} from '@material-ui/core';
+import {makeStyles, ThemeProvider} from '@material-ui/styles';
+import clsx from 'clsx';
 import * as Actions from 'app/store/actions';
-import connect from 'react-redux/es/connect/connect';
 import NavbarLayout1 from './NavbarLayout1';
+import {useDispatch, useSelector} from 'react-redux';
 
 const navbarWidth = 280;
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     wrapper        : {
-        display      : 'flex',
-        flexDirection: 'column',
+        display                     : 'flex',
+        flexDirection               : 'column',
         zIndex                      : 4,
         [theme.breakpoints.up('lg')]: {
             width   : navbarWidth,
@@ -57,27 +57,27 @@ const styles = theme => ({
         minWidth: navbarWidth
     },
     navbarContent  : {
-        flex         : '1 1 auto',
+        flex: '1 1 auto',
     },
     foldedAndClosed: {
         '& $navbarContent': {
-            '& .logo-icon'                          : {
+            '& .logo-icon'                                   : {
                 width : 32,
                 height: 32
             },
-            '& .logo-text'                          : {
+            '& .logo-text'                                   : {
                 opacity: 0
             },
-            '& .react-badge'                        : {
+            '& .react-badge'                                 : {
                 opacity: 0
             },
-            '& .list-item-text, & .arrow-icon'      : {
+            '& .list-item-text, & .arrow-icon, & .item-badge': {
                 opacity: 0
             },
-            '& .list-subheader .list-subheader-text': {
+            '& .list-subheader .list-subheader-text'         : {
                 opacity: 0
             },
-            '& .list-subheader:before'              : {
+            '& .list-subheader:before'                       : {
                 content  : '""',
                 display  : 'block',
                 position : 'absolute',
@@ -85,10 +85,10 @@ const styles = theme => ({
                 borderTop: '2px solid',
                 opacity  : .2
             },
-            '& .collapse-children'                  : {
+            '& .collapse-children'                           : {
                 display: 'none'
             },
-            '& .user'                               : {
+            '& .user'                                        : {
                 '& .username, & .email': {
                     opacity: 0
                 },
@@ -99,7 +99,7 @@ const styles = theme => ({
                     padding: 0
                 }
             },
-            '& .list-item.active'                   : {
+            '& .list-item.active'                            : {
                 marginLeft  : 12,
                 width       : 40,
                 padding     : 12,
@@ -113,21 +113,26 @@ const styles = theme => ({
             }
         }
     }
-});
+}));
 
-const NavbarWrapperLayout1 = ({classes, children, navbar, settings, navbarTheme, navbarOpenFolded, navbarCloseFolded, navbarCloseMobile}) => {
+function NavbarWrapperLayout1(props)
+{
+    const dispatch = useDispatch();
+    const config = useSelector(({fuse}) => fuse.settings.current.layout.config);
+    const navbarTheme = useSelector(({fuse}) => fuse.settings.navbarTheme);
+    const navbar = useSelector(({fuse}) => fuse.navbar);
 
-    const layoutConfig = settings.layout.config;
+    const classes = useStyles();
 
-    const folded = layoutConfig.navbar.folded;
+    const folded = config.navbar.folded;
     const foldedAndClosed = folded && !navbar.foldedOpen;
     const foldedAndOpened = folded && navbar.foldedOpen;
 
     return (
-        <MuiThemeProvider theme={navbarTheme}>
+        <ThemeProvider theme={navbarTheme}>
             <div id="fuse-navbar"
                  className={
-                     classNames(
+                     clsx(
                          classes.wrapper,
                          folded && classes.wrapperFolded
                      )}
@@ -135,16 +140,16 @@ const NavbarWrapperLayout1 = ({classes, children, navbar, settings, navbarTheme,
                 <Hidden mdDown>
                     <div
                         className={
-                            classNames(
+                            clsx(
                                 classes.navbar,
-                                classes[layoutConfig.navbar.position],
+                                classes[config.navbar.position],
                                 folded && classes.folded,
                                 foldedAndOpened && classes.foldedAndOpened,
                                 foldedAndClosed && classes.foldedAndClosed
                             )
                         }
-                        onMouseEnter={() => foldedAndClosed && navbarOpenFolded()}
-                        onMouseLeave={() => foldedAndOpened && navbarCloseFolded()}
+                        onMouseEnter={() => foldedAndClosed && dispatch(Actions.navbarOpenFolded())}
+                        onMouseLeave={() => foldedAndOpened && dispatch(Actions.navbarCloseFolded())}
                         style={{backgroundColor: navbarTheme.palette.background.default}}
                     >
                         <NavbarLayout1 className={classes.navbarContent}/>
@@ -153,13 +158,13 @@ const NavbarWrapperLayout1 = ({classes, children, navbar, settings, navbarTheme,
 
                 <Hidden lgUp>
                     <Drawer
-                        anchor={layoutConfig.navbar.position}
+                        anchor={config.navbar.position}
                         variant="temporary"
                         open={navbar.mobileOpen}
                         classes={{
                             paper: classes.navbar
                         }}
-                        onClose={navbarCloseMobile}
+                        onClose={() => dispatch(Actions.navbarCloseMobile())}
                         ModalProps={{
                             keepMounted: true // Better open performance on mobile.
                         }}
@@ -168,26 +173,8 @@ const NavbarWrapperLayout1 = ({classes, children, navbar, settings, navbarTheme,
                     </Drawer>
                 </Hidden>
             </div>
-        </MuiThemeProvider>
+        </ThemeProvider>
     );
-};
-
-function mapDispatchToProps(dispatch)
-{
-    return bindActionCreators({
-        navbarOpenFolded : Actions.navbarOpenFolded,
-        navbarCloseFolded: Actions.navbarCloseFolded,
-        navbarCloseMobile: Actions.navbarCloseMobile
-    }, dispatch);
 }
 
-function mapStateToProps({fuse})
-{
-    return {
-        settings   : fuse.settings.current,
-        navbarTheme: fuse.settings.navbarTheme,
-        navbar     : fuse.navbar
-    }
-}
-
-export default withStyles(styles, {withTheme: true})(connect(mapStateToProps, mapDispatchToProps)(NavbarWrapperLayout1));
+export default NavbarWrapperLayout1;

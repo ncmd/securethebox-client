@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {FuseUtils} from '@fuse';
 import {matchRoutes} from 'react-router-config';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
@@ -20,7 +21,7 @@ class FuseAuthorization extends Component {
     {
         if ( !this.state.accessGranted )
         {
-            this.redirectRoute(this.props);
+            this.redirectRoute();
         }
     }
 
@@ -28,22 +29,20 @@ class FuseAuthorization extends Component {
     {
         if ( !this.state.accessGranted )
         {
-            this.redirectRoute(this.props);
+            this.redirectRoute();
         }
     }
 
     static getDerivedStateFromProps(props, state)
     {
-        const {location, user} = props;
+        const {location, userRole} = props;
         const {pathname} = location;
 
         const matched = matchRoutes(state.routes, pathname)[0];
 
-        const accessGranted = (matched && matched.route.auth && matched.route.auth.length > 0) ? matched.route.auth.includes(user.role) : true;
-
         return {
-            accessGranted
-        };
+            accessGranted: matched ? FuseUtils.hasPermission(matched.route.auth, userRole) : true
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState)
@@ -51,15 +50,17 @@ class FuseAuthorization extends Component {
         return nextState.accessGranted !== this.state.accessGranted;
     }
 
-    redirectRoute(props)
+    redirectRoute()
     {
-        const {location, user, history} = props;
+        const {location, userRole, history} = this.props;
         const {pathname, state} = location;
+        const redirectUrl = state && state.redirectUrl ? state.redirectUrl : '/';
+
         /*
         User is guest
         Redirect to Login Page
         */
-        if ( user.role === 'guest' )
+        if ( !userRole || userRole.length === 0 )
         {
             history.push({
                 pathname: '/login',
@@ -73,8 +74,6 @@ class FuseAuthorization extends Component {
         */
         else
         {
-            const redirectUrl = state && state.redirectUrl ? state.redirectUrl : '/';
-
             history.push({
                 pathname: redirectUrl
             });
@@ -83,17 +82,15 @@ class FuseAuthorization extends Component {
 
     render()
     {
-        const {children} = this.props;
-        const {accessGranted} = this.state;
         // console.info('Fuse Authorization rendered', accessGranted);
-        return accessGranted ? <React.Fragment>{children}</React.Fragment> : null;
+        return this.state.accessGranted ? <React.Fragment>{this.props.children}</React.Fragment> : null;
     }
 }
 
-function mapStateToProps({fuse, auth})
+function mapStateToProps({auth})
 {
     return {
-        user: auth.user
+        userRole: auth.user.role
     }
 }
 

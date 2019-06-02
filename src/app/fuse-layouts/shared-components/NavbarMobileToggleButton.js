@@ -1,26 +1,21 @@
 import React from 'react';
 import {Icon, IconButton} from '@material-ui/core';
-import {bindActionCreators} from 'redux';
 import * as Actions from 'app/store/actions';
-import connect from 'react-redux/es/connect/connect';
+import {useDispatch} from 'react-redux';
 
-const NavbarMobileToggleButton = ({navbarToggleMobile, children, className}) => {
+function NavbarMobileToggleButton(props)
+{
+    const dispatch = useDispatch();
+
     return (
-        <IconButton className={className} onClick={navbarToggleMobile} color="inherit" disableRipple>
-            {children}
+        <IconButton className={props.className} onClick={ev => dispatch(Actions.navbarToggleMobile())} color="inherit" disableRipple>
+            {props.children}
         </IconButton>
     );
-};
-
-function mapDispatchToProps(dispatch)
-{
-    return bindActionCreators({
-        navbarToggleMobile: Actions.navbarToggleMobile
-    }, dispatch);
 }
 
 NavbarMobileToggleButton.defaultProps = {
     children: <Icon>menu</Icon>
 };
 
-export default connect(null, mapDispatchToProps)(NavbarMobileToggleButton);
+export default NavbarMobileToggleButton;
