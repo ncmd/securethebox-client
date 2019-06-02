@@ -1,7 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {Divider, Drawer, Icon, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, Switch, Typography} from '@material-ui/core';
+import React from 'react';
+import {Drawer, Typography} from '@material-ui/core';
 import {FuseScrollbars} from '@fuse';
-import moment from 'moment';
 import {useSelector, useDispatch} from 'react-redux';
 import * as Actions from './store/actions/index'
 import withReducer from 'app/store/withReducer';
@@ -17,6 +16,7 @@ const useStyles = makeStyles(theme => ({
 function QuickPanel(props)
 {
     const dispatch = useDispatch();
+    const state = useSelector(({quickPanel}) => quickPanel.state);
 
     const classes = useStyles();
 

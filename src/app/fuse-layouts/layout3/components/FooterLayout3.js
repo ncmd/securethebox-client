@@ -1,8 +1,6 @@
 import React from 'react';
-import {AppBar, Toolbar} from '@material-ui/core';
+import {AppBar, Toolbar, Typography} from '@material-ui/core';
 import {ThemeProvider} from '@material-ui/styles';
-import PurchaseButton from 'app/fuse-layouts/shared-components/PurchaseButton';
-import PoweredByLinks from 'app/fuse-layouts/shared-components/PoweredByLinks';
 import {useSelector} from 'react-redux';
 
 function FooterLayout3(props)
@@ -13,7 +11,6 @@ function FooterLayout3(props)
         <ThemeProvider theme={footerTheme}>
             <AppBar id="fuse-footer" className="relative z-10" color="default">
                 <Toolbar className="flex items-center container py-0 px-16 lg:px-24">
-
                     <Typography>
                         Footer
                     </Typography>

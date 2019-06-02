@@ -4,7 +4,6 @@ import {makeStyles, ThemeProvider} from '@material-ui/styles';
 import {FuseSearch, FuseShortcuts} from '@fuse';
 import NavbarMobileToggleButton from 'app/fuse-layouts/shared-components/NavbarMobileToggleButton';
 import QuickPanelToggleButton from 'app/fuse-layouts/shared-components/quickPanel/QuickPanelToggleButton';
-import ChatPanelToggleButton from 'app/fuse-layouts/shared-components/chatPanel/ChatPanelToggleButton';
 import UserMenu from 'app/fuse-layouts/shared-components/UserMenu';
 import {useSelector} from 'react-redux';
 
@@ -53,7 +52,6 @@ function ToolbarLayout2(props)
 
                             <div className={classes.separator}/>
 
-                            <ChatPanelToggleButton/>
                         </Hidden>
 
                         <div className={classes.separator}/>

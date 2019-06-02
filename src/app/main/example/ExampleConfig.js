@@ -18,7 +18,7 @@ export const ExampleConfig = {
  * Lazy load Example
  */
 /*
-import FuseLoadable from '@fuse/components/FuseLoadable/FuseLoadable';
+import React from 'react';
 
 export const ExampleConfig = {
     settings: {
@@ -29,9 +29,7 @@ export const ExampleConfig = {
     routes  : [
         {
             path     : '/example',
-            component: FuseLoadable({
-                loader: () => import('./Example')
-            })
+            component: React.lazy(() => import('./Example'))
         }
     ]
 };
