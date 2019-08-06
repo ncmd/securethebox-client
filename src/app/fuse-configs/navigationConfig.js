@@ -3,6 +3,12 @@ import {authRoles} from 'app/auth';
 
 const navigationConfig = [
     {
+        'id'   : 'typescript-example-page',
+        'title': 'Typescript Example Page',
+        'type' : 'item',
+        'url'  : '/typescript-example-page',
+    },
+    {
         'id'      : 'applications',
         'title'   : 'Applications',
         'type'    : 'group',
