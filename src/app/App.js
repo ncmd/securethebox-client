@@ -10,6 +10,8 @@ import AppContext from './AppContext';
 import routes from './fuse-configs/routesConfig';
 import {create} from 'jss';
 import {StylesProvider, jssPreset, createGenerateClassName} from '@material-ui/styles';
+import {MuiPickersUtilsProvider} from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
 
 const jss = create({
     ...jssPreset(),
@@ -28,15 +30,17 @@ const App = () => {
         >
             <StylesProvider jss={jss} generateClassName={generateClassName}>
                 <Provider store={store}>
-                    <Auth>
-                        <Router history={history}>
-                            <FuseAuthorization>
-                                <FuseTheme>
-                                    <FuseLayout/>
-                                </FuseTheme>
-                            </FuseAuthorization>
-                        </Router>
-                    </Auth>
+                    <MuiPickersUtilsProvider utils={MomentUtils}>
+                        <Auth>
+                            <Router history={history}>
+                                <FuseAuthorization>
+                                    <FuseTheme>
+                                        <FuseLayout/>
+                                    </FuseTheme>
+                                </FuseAuthorization>
+                            </Router>
+                        </Auth>
+                    </MuiPickersUtilsProvider>
                 </Provider>
             </StylesProvider>
         </AppContext.Provider>

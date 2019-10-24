@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Grow, Paper, Icon, IconButton, ListItem, ListItemText} from '@material-ui/core';
 import {makeStyles} from '@material-ui/styles';
-import {FuseUtils} from '@fuse';
+import {FuseUtils, NavLinkAdapter} from '@fuse';
 import {useDebounce} from '@fuse/hooks';
 import {withRouter} from 'react-router-dom';
 import clsx from 'clsx';
@@ -17,8 +17,8 @@ const useStyles = makeStyles(theme => ({
     root       : {
         color                                     : theme.palette.text.primary,
         '&.active, &.active:hover, &.active:focus': {
-            backgroundColor: theme.palette.secondary.main + '!important',
-            color          : theme.palette.secondary.contrastText + '!important',
+            backgroundColor            : theme.palette.secondary.main + '!important',
+            color                      : theme.palette.secondary.contrastText + '!important',
             '& .list-item-text-primary': {
                 color: 'inherit'
             },
@@ -30,22 +30,12 @@ const useStyles = makeStyles(theme => ({
             padding: '0 0 0 16px'
         },
         '&.level-0'                               : {
-            height      : 48,
+            height      : 44,
             borderRadius: 4,
             '&:hover'   : {
                 background: 'transparent'
             },
         },
-        '&.dense'                                 : {
-            padding            : '8px 12px 8px 12px',
-            minHeight          : 40,
-            '&.level-0'        : {
-                height: 44
-            },
-            '& .list-item-text': {
-                padding: '0 0 0 8px'
-            }
-        }
     },
     children   : {},
     popper     : {
@@ -106,11 +96,14 @@ function FuseNavHorizontalGroup(props)
                     <div ref={ref}>
                         <ListItem
                             button
-                            className={clsx("list-item ", classes.root, "relative", "level-" + nestedLevel, dense && "dense", isUrlInChildren(item, props.location.pathname) && "active")}
+                            className={clsx("list-item ", classes.root, "relative", "level-" + nestedLevel, isUrlInChildren(item, props.location.pathname) && "active")}
                             onMouseEnter={() => handleToggle(true)}
                             onMouseLeave={() => handleToggle(false)}
                             aria-owns={opened ? 'menu-list-grow' : null}
                             aria-haspopup="true"
+                            component={item.url ? NavLinkAdapter : 'li'}
+                            to={item.url}
+                            role="button"
                         >
                             {item.icon && (
                                 <Icon color="action" className="list-item-icon text-16 flex-shrink-0">{item.icon}</Icon>
@@ -148,7 +141,7 @@ function FuseNavHorizontalGroup(props)
                                         onMouseLeave={() => handleToggle(false)}
                                     >
                                         {item.children && (
-                                            <ul className={clsx(classes.children, "pl-0")}>
+                                            <ul className={clsx(classes.children, "popper-navigation-list", dense && "dense", "pl-0")}>
                                                 {
                                                     item.children.map((item) => (
                                                         <React.Fragment key={item.id}>

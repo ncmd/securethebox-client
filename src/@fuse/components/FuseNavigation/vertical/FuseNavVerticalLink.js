@@ -27,10 +27,6 @@ const useStyles = makeStyles(theme => ({
                 color: 'inherit'
             }
         },
-        '&.square, &.active.square': {
-            width       : '100%',
-            borderRadius: '0'
-        },
         '& .list-item-icon'        : {},
         '& .list-item-text'        : {},
         color                      : theme.palette.text.primary,
@@ -44,7 +40,7 @@ function FuseNavVerticalLink(props)
     const userRole = useSelector(({auth}) => auth.user.role);
 
     const classes = useStyles(props);
-    const {item, nestedLevel, active} = props;
+    const {item, nestedLevel} = props;
     let paddingValue = 40 + (nestedLevel * 16);
     const listItemPadding = nestedLevel > 0 ? 'pl-' + (paddingValue > 80 ? 80 : paddingValue) : 'pl-24';
 
@@ -59,7 +55,7 @@ function FuseNavVerticalLink(props)
             component="a"
             href={item.url}
             target={item.target ? item.target : "_blank"}
-            className={clsx(classes.item, listItemPadding, 'list-item', active)}
+            className={clsx(classes.item, listItemPadding, 'list-item')}
             onClick={ev => dispatch(Actions.navbarCloseMobile())}
             role='button'
         >
