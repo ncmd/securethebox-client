@@ -1,37 +1,37 @@
-import React, {Component} from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import React from 'react';
 import {FusePageSimple, DemoContent} from '@fuse';
+import {makeStyles} from '@material-ui/styles';
+import {useTranslation} from 'react-i18next';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     layoutRoot: {}
-});
+}));
 
-class Example extends Component {
+function ExamplePage(props)
+{
+    const classes = useStyles(props);
+    const {t} = useTranslation('examplePage');
 
-    render()
-    {
-        const {classes} = this.props;
-        return (
-            <FusePageSimple
-                classes={{
-                    root: classes.layoutRoot
-                }}
-                header={
-                    <div className="p-24"><h4>Header</h4></div>
-                }
-                contentToolbar={
-                    <div className="px-24"><h4>Content Toolbar</h4></div>
-                }
-                content={
-                    <div className="p-24">
-                        <h4>Content</h4>
-                        <br/>
-                        <DemoContent/>
-                    </div>
-                }
-            />
-        )
-    }
+    return (
+        <FusePageSimple
+            classes={{
+                root: classes.layoutRoot
+            }}
+            header={
+                <div className="p-24"><h4>{t('TITLE')}</h4></div>
+            }
+            contentToolbar={
+                <div className="px-24"><h4>Content Toolbar</h4></div>
+            }
+            content={
+                <div className="p-24">
+                    <h4>Content</h4>
+                    <br/>
+                    <DemoContent/>
+                </div>
+            }
+        />
+    )
 }
 
-export default withStyles(styles, {withTheme: true})(Example);
+export default ExamplePage;
