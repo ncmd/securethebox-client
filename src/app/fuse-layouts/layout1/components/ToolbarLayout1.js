@@ -6,6 +6,7 @@ import NavbarMobileToggleButton from 'app/fuse-layouts/shared-components/NavbarM
 import QuickPanelToggleButton from 'app/fuse-layouts/shared-components/quickPanel/QuickPanelToggleButton';
 import UserMenu from 'app/fuse-layouts/shared-components/UserMenu';
 import {useSelector} from 'react-redux';
+import LanguageSwitcher from '../../shared-components/LanguageSwitcher';
 
 const useStyles = makeStyles(theme => ({
     separator: {
@@ -53,6 +54,10 @@ function ToolbarLayout1(props)
                             <div className={classes.separator}/>
 
                         </Hidden>
+
+                        <div className={classes.separator}/>
+
+                        <LanguageSwitcher/>
 
                         <div className={classes.separator}/>
 

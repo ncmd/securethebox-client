@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Grow, Paper, Icon, IconButton, ListItem, ListItemText} from '@material-ui/core';
-import {makeStyles} from '@material-ui/styles';
+import {makeStyles, useTheme} from '@material-ui/styles';
 import {FuseUtils, NavLinkAdapter} from '@fuse';
 import {useDebounce} from '@fuse/hooks';
 import {withRouter} from 'react-router-dom';
@@ -13,6 +13,7 @@ import FuseNavHorizontalGroup from './FuseNavHorizontalGroup';
 import FuseNavHorizontalItem from './FuseNavHorizontalItem';
 import FuseNavHorizontalLink from './FuseNavHorizontalLink';
 import FuseNavBadge from './../FuseNavBadge';
+import {useTranslation} from 'react-i18next';
 
 const useStyles = makeStyles(theme => ({
     root       : {
@@ -52,6 +53,8 @@ function FuseNavHorizontalCollapse(props)
     const classes = useStyles(props);
     const [opened, setOpened] = useState(false);
     const {item, nestedLevel, dense} = props;
+    const theme = useTheme()
+    const {t} = useTranslation('navigation');
 
     const handleToggle = useDebounce((open) => {
         setOpened(open);
@@ -89,7 +92,7 @@ function FuseNavHorizontalCollapse(props)
     }
 
     return (
-        <ul className={clsx(classes.root, "relative pl-0")}>
+        <ul className={clsx(classes.root, "relative px-0")}>
             <Manager>
                 <Reference>
                     {({ref}) => (
@@ -108,12 +111,18 @@ function FuseNavHorizontalCollapse(props)
                                 {item.icon && (
                                     <Icon color="action" className="list-item-icon text-16 flex-shrink-0">{item.icon}</Icon>
                                 )}
-                                <ListItemText className="list-item-text" primary={item.title} classes={{primary: 'text-14'}}/>
+
+                                <ListItemText
+                                    className="list-item-text"
+                                    primary={item.translate ? t(item.translate) : item.title}
+                                    classes={{primary: 'text-14'}}
+                                />
+
                                 {item.badge && (
-                                    <FuseNavBadge className="ml-8 mr-4" badge={item.badge}/>
+                                    <FuseNavBadge className="mx-4" badge={item.badge}/>
                                 )}
-                                <IconButton disableRipple className="w-16 h-16 ml-4 p-0">
-                                    <Icon className="text-16 arrow-icon">keyboard_arrow_right</Icon>
+                                <IconButton disableRipple className="w-16 h-16 ltr:ml-4 rtl:mr-4 p-0">
+                                    <Icon className="text-16 arrow-icon">{theme.direction === "ltr" ? "keyboard_arrow_right" : "keyboard_arrow_left"}</Icon>
                                 </IconButton>
                             </ListItem>
                         </div>
@@ -121,7 +130,7 @@ function FuseNavHorizontalCollapse(props)
                 </Reference>
                 {ReactDOM.createPortal(
                     <Popper
-                        placement="right"
+                        placement={theme.direction === "ltr" ? "right" : "left"}
                         eventsEnabled={opened}
                         positionFixed
                     >
@@ -142,7 +151,7 @@ function FuseNavHorizontalCollapse(props)
                                             onMouseLeave={() => handleToggle(false)}
                                         >
                                             {item.children && (
-                                                <ul className={clsx(classes.children, "popper-navigation-list", dense && "dense", "pl-0")}>
+                                                <ul className={clsx(classes.children, "popper-navigation-list", dense && "dense", "px-0")}>
                                                     {
                                                         item.children.map((item) => (
 
