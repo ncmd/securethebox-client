@@ -1,7 +1,9 @@
+import AppBar from '@material-ui/core/AppBar';
+import { ThemeProvider } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import {AppBar, Toolbar,Typography} from '@material-ui/core';
-import {ThemeProvider} from '@material-ui/styles';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
 function FooterLayout1(props)
 {

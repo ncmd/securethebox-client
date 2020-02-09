@@ -1,11 +1,12 @@
-import React from 'react';
-import {Drawer, Typography} from '@material-ui/core';
-import {FuseScrollbars} from '@fuse';
-import {useSelector, useDispatch} from 'react-redux';
-import * as Actions from './store/actions/index'
+import FuseScrollbars from '@fuse/core/FuseScrollbars';
+import Drawer from '@material-ui/core/Drawer';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import withReducer from 'app/store/withReducer';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import * as Actions from './store/actions/index';
 import reducer from './store/reducers';
-import {makeStyles} from '@material-ui/styles';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -13,8 +14,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function QuickPanel(props)
-{
+function QuickPanel(props) {
     const dispatch = useDispatch();
     const state = useSelector(({quickPanel}) => quickPanel.state);
 

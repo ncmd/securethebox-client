@@ -1,8 +1,7 @@
-import React from 'react';
 import QuickPanel from 'app/fuse-layouts/shared-components/quickPanel/QuickPanel';
+import React from 'react';
 
-function RightSideLayout2()
-{
+function RightSideLayout2() {
     return (
         <React.Fragment>
             <QuickPanel/>

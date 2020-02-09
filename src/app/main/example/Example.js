@@ -1,6 +1,7 @@
+import DemoContent from '@fuse/core/DemoContent';
+import FusePageSimple from '@fuse/core/FusePageSimple';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import {FusePageSimple, DemoContent} from '@fuse';
-import {makeStyles} from '@material-ui/styles';
 import {useTranslation} from 'react-i18next';
 
 const useStyles = makeStyles(theme => ({
@@ -8,7 +9,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function ExamplePage(props)
-{
     const classes = useStyles(props);
     const {t} = useTranslation('examplePage');
 
@@ -31,7 +31,7 @@ function ExamplePage(props)
                 </div>
             }
         />
-    )
+    );
 }
 
 export default ExamplePage;
